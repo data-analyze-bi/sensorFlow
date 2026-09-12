@@ -14,7 +14,9 @@ It is a lightweight alternative to hosted product analytics tools for teams that
 
 Designed for simple deployment, low server overhead, predictable pricing, Sensors Data SDK compatibility, and fully customizable Apache Superset BI.
 
-Keywords: self-hosted product analytics, open-source event tracking, user behavior analytics, ClickHouse analytics, and Sensors Data SDK integration.
+Keywords: self-hosted product analytics, open-source event tracking, user behavior analytics, event instrumentation, 埋点, 埋点分析, 用户行为分析, ClickHouse analytics, and Sensors Data SDK integration.
+
+For Chinese developers, SensorFlow is an open-source **埋点分析平台** and **用户行为埋点系统**.
 
 Languages: [简体中文](README.zh-CN.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Deutsch](README.de.md) | [Français](README.fr.md) | [Español](README.es.md) | [Português](README.pt-BR.md)
 

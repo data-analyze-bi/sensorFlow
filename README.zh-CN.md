@@ -14,7 +14,9 @@ SensorFlow 是一个开源、自托管的用户行为分析与产品数据分析
 
 核心优势：部署简单、服务器资源占用低、价格可预期，并兼容成熟的神策 SDK 采集生态与 Apache Superset 开放 BI 能力。
 
-关键词：开源埋点分析、自托管用户行为分析、产品数据分析、事件分析平台、ClickHouse 埋点、神策 SDK 兼容、Apache Superset 数据看板。
+关键词：埋点、埋点分析、开源埋点平台、自托管埋点系统、用户行为埋点、用户行为分析、产品数据分析、事件分析平台、ClickHouse 埋点、神策 SDK 兼容、Apache Superset 数据看板。
+
+如果你正在搜索“埋点平台”“埋点分析工具”或“开源用户行为分析系统”，SensorFlow 提供了一套基于 Go、ClickHouse 和 Apache Superset 的自托管方案。
 
 语言：[English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Deutsch](README.de.md) | [Français](README.fr.md) | [Español](README.es.md) | [Português](README.pt-BR.md)
 
