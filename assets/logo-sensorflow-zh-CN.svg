@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="180" viewBox="0 0 720 180" role="img" aria-labelledby="title desc">
+  <title id="title">SensorFlow 标志</title>
+  <desc id="desc">带有连接信号节点的事件数据流标志。</desc>
+  <rect width="720" height="180" rx="28" fill="#ffffff"/>
+  <g transform="translate(42 36)">
+    <rect x="0" y="0" width="108" height="108" rx="26" fill="#101828"/>
+    <path d="M30 75 C46 75 44 33 61 33 C76 33 73 75 91 75" fill="none" stroke="#ffffff" stroke-width="9" stroke-linecap="round"/>
+    <circle cx="30" cy="75" r="8" fill="#45E0A8"/>
+    <circle cx="61" cy="33" r="8" fill="#63B3FF"/>
+    <circle cx="91" cy="75" r="8" fill="#F2C94C"/>
+    <path d="M27 91 H94" stroke="#ffffff" stroke-width="8" stroke-linecap="round" opacity=".72"/>
+  </g>
+  <text x="184" y="83" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif" font-size="46" font-weight="760" fill="#101828">SensorFlow</text>
+  <text x="187" y="124" font-family="-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei','Segoe UI',Arial,sans-serif" font-size="20" font-weight="500" fill="#667085">自托管事件分析</text>
+</svg>

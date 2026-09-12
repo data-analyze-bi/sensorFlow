@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SensorFlow Docker 部署</title>
+  <link rel="stylesheet" href="../../docs/style.css">
+</head>
+<body>
+<main>
+  <h1>Docker 基础设施部署</h1>
+  <p class="meta">Redis / MySQL / ClickHouse / Superset 统一放在 <code>deploy/docker/</code>。</p>
+  <h2>启动</h2>
+  <pre><code>cd deploy/docker
+docker compose up -d --build</code></pre>
+  <h2>端口</h2>
+  <table>
+    <thead><tr><th>服务</th><th>默认端口</th><th>用途</th></tr></thead>
+    <tbody>
+      <tr><td>MySQL</td><td>3306</td><td>运营后台账号、订单、授权和管理数据。</td></tr>
+      <tr><td>Redis</td><td>6379</td><td>缓存、限流、异步状态。</td></tr>
+      <tr><td>ClickHouse</td><td>8123 / 9000</td><td>事件明细和分析查询。</td></tr>
+      <tr><td>Superset</td><td>8088</td><td>连接 ClickHouse 的自助分析看板。</td></tr>
+    </tbody>
+  </table>
+</main>
+</body>
+</html>

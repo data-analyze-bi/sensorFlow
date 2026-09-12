@@ -1,0 +1,7 @@
+FROM apache/superset:latest
+
+USER root
+RUN /usr/local/bin/python -m pip install --no-cache-dir \
+    -i https://pypi.tuna.tsinghua.edu.cn/simple \
+    clickhouse-connect
+USER superset
