@@ -4,13 +4,17 @@
 
 # SensorFlow
 
-一套从采集到可视化的自托管埋点分析方案：
+SensorFlow 是一个开源、自托管的用户行为分析与产品数据分析平台，用于采集、存储、查询和可视化用户事件。
+
+它适合希望自主掌控数据、降低 SaaS 分析成本，并在自己的服务器上运行埋点分析系统的团队。
 
 **神策各端 SDK -> 数据接收服务 -> ClickHouse -> Apache Superset**
 
 ![SensorFlow 运营概览](assets/operations-overview.svg)
 
 核心优势：部署简单、服务器资源占用低、价格可预期，并兼容成熟的神策 SDK 采集生态与 Apache Superset 开放 BI 能力。
+
+关键词：开源埋点分析、自托管用户行为分析、产品数据分析、事件分析平台、ClickHouse 埋点、神策 SDK 兼容、Apache Superset 数据看板。
 
 语言：[English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Deutsch](README.de.md) | [Français](README.fr.md) | [Español](README.es.md) | [Português](README.pt-BR.md)
 
@@ -23,6 +27,35 @@
 - ClickHouse：保存事件和用户数据，执行分析查询。
 - Apache Superset：提供 SQL 查询、图表与看板。
 - Redis：提供接收链路所需的缓存能力。
+
+## 使用场景
+
+SensorFlow 适用于：
+
+- Web、Android、iOS、小程序和服务端的用户行为埋点
+- 产品数据分析、事件分析和用户行为分析
+- 对数据隐私、数据驻留和基础设施自主权有要求的团队
+- 基于 ClickHouse 的高性能事件数据查询
+- 兼容神策 SDK 的自托管数据接收
+- 使用 Apache Superset 构建内部数据分析看板
+- 替代 Amplitude、Mixpanel 等托管式产品分析工具
+
+## 为什么选择 SensorFlow
+
+- **开源可控：** 可以查看代码、调整数据处理逻辑并自行部署。
+- **完全自托管：** 用户事件和用户数据保存在自己的基础设施中。
+- **部署简单：** 使用 Docker Compose 启动 ClickHouse、Redis 和 Superset。
+- **查询灵活：** 直接使用 ClickHouse SQL 分析事件数据。
+- **SDK 兼容：** 可将已有神策 SDK 应用接入 SensorFlow 数据接收服务。
+
+## 中文文档
+
+- [快速开始](docs/getting-started.zh-CN.md)
+- [自托管部署指南](docs/self-hosted-deployment.zh-CN.md)
+- [产品分析与用户行为埋点](docs/product-analytics.zh-CN.md)
+- [ClickHouse 与 Superset 数据分析](docs/clickhouse-superset.zh-CN.md)
+- [神策 SDK 接入](docs/sensors-sdk.zh-CN.md)
+- [Amplitude 和 Mixpanel 开源替代方案](docs/alternatives.zh-CN.md)
 
 ## 启动数据基础设施
 

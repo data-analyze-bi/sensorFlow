@@ -4,13 +4,17 @@
 
 # SensorFlow
 
-Self-hosted event analytics from collection to visualization:
+SensorFlow is an open-source, self-hosted product analytics platform for collecting, storing, querying, and visualizing user events.
+
+It is a lightweight alternative to hosted product analytics tools for teams that want to keep event data in their own infrastructure.
 
 **Sensors Data SDKs -> ingestion service -> ClickHouse -> Apache Superset**
 
 ![SensorFlow operations overview](assets/operations-overview.svg)
 
 Designed for simple deployment, low server overhead, predictable pricing, Sensors Data SDK compatibility, and fully customizable Apache Superset BI.
+
+Keywords: self-hosted product analytics, open-source event tracking, user behavior analytics, ClickHouse analytics, and Sensors Data SDK integration.
 
 Languages: [简体中文](README.zh-CN.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Deutsch](README.de.md) | [Français](README.fr.md) | [Español](README.es.md) | [Português](README.pt-BR.md)
 
@@ -23,6 +27,35 @@ Languages: [简体中文](README.zh-CN.md) | [日本語](README.ja.md) | [한국
 - ClickHouse stores event and user data for analytical queries.
 - Apache Superset provides SQL exploration, charts, and dashboards.
 - Redis supports ingestion caching.
+
+## Use cases
+
+SensorFlow is suitable for:
+
+- Product analytics and user behavior analysis
+- Web, mobile, mini-program, and server event tracking
+- Privacy-sensitive teams that need self-hosted analytics
+- ClickHouse-based event data analysis
+- Sensors Data SDK-compatible data ingestion
+- Internal dashboards with Apache Superset
+- Replacing hosted analytics tools with a self-managed stack
+
+## Why SensorFlow
+
+- **Self-hosted:** keep event and user data in infrastructure you control.
+- **Open source:** inspect, customize, and operate the stack yourself.
+- **Operationally simple:** deploy the data stack with Docker Compose.
+- **Analytics-ready:** use ClickHouse SQL and Apache Superset dashboards.
+- **SDK-compatible:** connect existing Sensors Data SDK applications through the ingestion endpoint.
+
+## Documentation
+
+- [Getting started](docs/getting-started.md)
+- [Self-hosted deployment](docs/self-hosted-deployment.md)
+- [Product analytics and event tracking](docs/product-analytics.md)
+- [ClickHouse and Superset](docs/clickhouse-superset.md)
+- [Sensors Data SDK integration](docs/sensors-sdk.md)
+- [Open-source alternatives](docs/alternatives.md)
 
 ## Start the data stack
 
