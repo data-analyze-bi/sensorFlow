@@ -2,6 +2,8 @@
 
 ClickHouse 是 SensorFlow 的事件分析存储引擎，Apache Superset 用于 SQL 查询、图表制作和数据看板展示。
 
+在线体验：[查看 SensorFlow Superset 测试看板](https://superset.sensorflow.site/)。
+
 示例查询：
 
 ```sql

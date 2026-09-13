@@ -8,6 +8,8 @@ SensorFlow 是一个开源、自托管的用户行为分析与产品数据分析
 
 它适合希望自主掌控数据、降低 SaaS 分析成本，并在自己的服务器上运行埋点分析系统的团队。
 
+> **Superset 测试看板：** [https://superset.sensorflow.site/](https://superset.sensorflow.site/)
+
 **神策各端 SDK -> 数据接收服务 -> ClickHouse -> Apache Superset**
 
 ![SensorFlow 运营概览](assets/operations-overview.svg)

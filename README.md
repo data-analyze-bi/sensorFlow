@@ -8,6 +8,8 @@ SensorFlow is an open-source, self-hosted product analytics platform for collect
 
 It is a lightweight alternative to hosted product analytics tools for teams that want to keep event data in their own infrastructure.
 
+> **Live Superset demo:** [https://superset.sensorflow.site/](https://superset.sensorflow.site/)
+
 **Sensors Data SDKs -> ingestion service -> ClickHouse -> Apache Superset**
 
 ![SensorFlow operations overview](assets/operations-overview.svg)

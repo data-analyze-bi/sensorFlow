@@ -2,6 +2,8 @@
 
 ClickHouse is SensorFlow's analytical storage engine. Apache Superset connects to ClickHouse for SQL exploration, charts, and dashboards.
 
+Try the hosted demo: [View the SensorFlow Superset demo dashboard](https://superset.sensorflow.site/).
+
 Example query:
 
 ```sql
