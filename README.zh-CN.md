@@ -61,6 +61,14 @@ SensorFlow 适用于：
 - [神策 SDK 接入](docs/sensors-sdk.zh-CN.md)
 - [Amplitude 和 Mixpanel 开源替代方案](docs/alternatives.zh-CN.md)
 
+## 埋点与用户行为分析指南
+
+- [GitHub 搜索埋点：如何筛选开源数据埋点项目](https://sensorflow.site/resources/guides/github-search-event-tracking)
+- [神策 SDK 数据迁移到自托管 ClickHouse](https://sensorflow.site/use-cases/sensors-sdk-to-clickhouse)
+- [2026 开源埋点平台对比：SensorFlow、PostHog 与 Matomo](https://sensorflow.site/resources/comparisons/open-source-tracking-platforms)
+- [数据埋点是什么：事件模型、采集方式与质量检查](https://sensorflow.site/resources/learn/what-is-event-tracking)
+- [使用 ClickHouse 与 Superset 搭建用户行为分析](https://sensorflow.site/use-cases/clickhouse-superset-analytics)
+
 ## 启动数据基础设施
 
 安装 Docker Engine 或 Docker Desktop 与 Docker Compose，然后运行：

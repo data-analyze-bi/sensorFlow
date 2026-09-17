@@ -61,6 +61,14 @@ SensorFlow is suitable for:
 - [Sensors Data SDK integration](docs/sensors-sdk.md)
 - [Open-source alternatives](docs/alternatives.md)
 
+## Guides and comparisons
+
+- [How to evaluate open-source event tracking projects](https://sensorflow.site/resources/guides/github-search-event-tracking)
+- [Migrate Sensors Data SDK ingestion to ClickHouse](https://sensorflow.site/use-cases/sensors-sdk-to-clickhouse)
+- [SensorFlow vs PostHog vs Matomo](https://sensorflow.site/resources/comparisons/open-source-tracking-platforms)
+- [What is event tracking?](https://sensorflow.site/resources/learn/what-is-event-tracking)
+- [Build behavior analytics with ClickHouse and Superset](https://sensorflow.site/use-cases/clickhouse-superset-analytics)
+
 ## Start the data stack
 
 Install Docker Engine or Docker Desktop with Docker Compose, then run:
