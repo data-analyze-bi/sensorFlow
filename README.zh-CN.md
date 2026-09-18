@@ -68,6 +68,10 @@ SensorFlow 适用于：
 - [2026 开源埋点平台对比：SensorFlow、PostHog 与 Matomo](https://sensorflow.site/resources/comparisons/open-source-tracking-platforms)
 - [数据埋点是什么：事件模型、采集方式与质量检查](https://sensorflow.site/resources/learn/what-is-event-tracking)
 - [使用 ClickHouse 与 Superset 搭建用户行为分析](https://sensorflow.site/use-cases/clickhouse-superset-analytics)
+- [自托管事件分析：架构、收益与限制](https://sensorflow.site/use-cases/self-hosted-event-tracking)
+- [ClickHouse 埋点：表结构、接收链路与 SQL](https://sensorflow.site/use-cases/clickhouse-event-tracking)
+- [神策数据开源替代方案](https://sensorflow.site/resources/alternatives/sensors-data)
+- [PostHog 替代方案客观对比](https://sensorflow.site/resources/alternatives/posthog)
 
 ## 启动数据基础设施
 

@@ -68,6 +68,10 @@ SensorFlow is suitable for:
 - [SensorFlow vs PostHog vs Matomo](https://sensorflow.site/resources/comparisons/open-source-tracking-platforms)
 - [What is event tracking?](https://sensorflow.site/resources/learn/what-is-event-tracking)
 - [Build behavior analytics with ClickHouse and Superset](https://sensorflow.site/use-cases/clickhouse-superset-analytics)
+- [Self-hosted event tracking architecture and tradeoffs](https://sensorflow.site/use-cases/self-hosted-event-tracking)
+- [ClickHouse event tracking: schema, ingestion, and SQL](https://sensorflow.site/use-cases/clickhouse-event-tracking)
+- [PostHog alternatives by use case](https://sensorflow.site/resources/alternatives/posthog)
+- [Sensors Data alternatives (Chinese)](https://sensorflow.site/resources/alternatives/sensors-data)
 
 ## Start the data stack
 
