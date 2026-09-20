@@ -45,6 +45,8 @@ Start the stack:
 
 ```bash
 cd deploy/docker
+cp .env.example .env
+# Edit .env and set your own SUPERSET_SECRET_KEY and SUPERSET_ADMIN_PASSWORD.
 docker compose up -d --build
 docker compose ps
 ```
@@ -69,17 +71,17 @@ Send a uniquely named integration event from the real client, then verify the st
 ```bash
 cd deploy/docker
 docker compose exec -T clickhouse clickhouse-client \
-  --password "${CLICKHOUSE_PASSWORD:-sensorflow-dev}" \
+  ${CLICKHOUSE_PASSWORD:+--password "$CLICKHOUSE_PASSWORD"} \
   --query "SELECT time, event, distinct_id FROM sensors.event WHERE event = 'integration_test' ORDER BY time DESC LIMIT 10"
 ```
 
-Open Superset at `http://127.0.0.1:8088`. The local defaults are `admin` / `sensorflow-dev`.
+Open Superset at `http://127.0.0.1:8088`. Set `SUPERSET_ADMIN_PASSWORD` before startup; the stack does not define a customer password.
 
 ## Production requirements
 
-The default credentials are only for local validation. Before production:
+The stack does not define Redis, ClickHouse, MySQL, or customer account passwords. Redis and ClickHouse start without passwords only when their variables are empty and their ports remain bound to `127.0.0.1`. Before production:
 
-- Override Redis, ClickHouse, and Superset passwords and `SUPERSET_SECRET_KEY`.
+- Set `REDIS_PASSWORD`, `CLICKHOUSE_PASSWORD`, `SUPERSET_ADMIN_PASSWORD`, `SUPERSET_SECRET_KEY`, and a matching URL-encoded `CLICKHOUSE_SQLALCHEMY_URI`.
 - Terminate TLS in a reverse proxy and expose only the required ingestion path.
 - Keep database ports private, configure backups, and monitor decoder failures, ingestion latency, and ClickHouse disk usage.
 - Pin and review container image versions according to your release policy.

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	beego "github.com/beego/beego/v2/server/web"
 	"github.com/tal-tech/go-zero/core/logx"
+	"os"
 	"sensors/common"
 	"sync"
 
@@ -120,6 +121,12 @@ func getClickhouseInstance() (*sql.DB, error) {
 	username, _ := beego.AppConfig.String("ckUsername")
 	database, _ := beego.AppConfig.String("ckDatabase")
 	pwd, _ := beego.AppConfig.String("ckPwd")
+	host = configValue("CLICKHOUSE_HOST", host)
+	username = configValue("CLICKHOUSE_USER", username)
+	database = configValue("CLICKHOUSE_DB", database)
+	if envPwd, exists := os.LookupEnv("CLICKHOUSE_PASSWORD"); exists {
+		pwd = envPwd
+	}
 	clickhouseDSN = fmt.Sprintf(clickhouseDSN, host, username, pwd, database)
 	clickOnce.Do(func() {
 		var err error
@@ -136,4 +143,11 @@ func getClickhouseInstance() (*sql.DB, error) {
 	})
 
 	return Clickhouse, nil
+}
+
+func configValue(name, fallback string) string {
+	if value, exists := os.LookupEnv(name); exists && value != "" {
+		return value
+	}
+	return fallback
 }

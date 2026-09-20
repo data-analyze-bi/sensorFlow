@@ -3,3 +3,4 @@ sensors
 binaries/licenses/*
 !binaries/licenses/.gitkeep
 *.verify.json
+deploy/docker/.env

@@ -6,14 +6,18 @@
 
 ```bash
 test -x ../../binaries/licenses/current/decoder
+cp .env.example .env
+# 在 .env 中设置自己的 SUPERSET_SECRET_KEY 和 SUPERSET_ADMIN_PASSWORD。
 docker compose up -d --build
 docker compose ps
 docker compose logs ingestion
 ```
 
-可覆盖的变量包括 `REDIS_PASSWORD`、`CLICKHOUSE_PASSWORD`、`SUPERSET_SECRET_KEY`、`SUPERSET_ADMIN_PASSWORD`、`CLICKHOUSE_SQLALCHEMY_URI`、`SENSORFLOW_PORT`、`CLICKHOUSE_HTTP_PORT`、`CLICKHOUSE_NATIVE_PORT`、`REDIS_PORT` 和 `SUPERSET_PORT`。
+项目不定义客户密码。`REDIS_PASSWORD` 和 `CLICKHOUSE_PASSWORD` 为空时，内置本地数据库以无认证模式启动；设置非空值后会启用认证，并把相同值传给接收服务。启用 ClickHouse 密码时，还需设置包含相同 URL 编码凭证的 `CLICKHOUSE_SQLALCHEMY_URI` 供 Superset 使用。
 
-所有公开端口默认只绑定 `127.0.0.1`。共享或生产部署前必须替换全部默认凭证、配置 TLS 与备份，并确保 decoder/license 文件不进入 Git。
+可覆盖变量包括 `REDIS_HOST`、`REDIS_TYPE`、`REDIS_PASSWORD`、`CLICKHOUSE_HOST`、`CLICKHOUSE_USER`、`CLICKHOUSE_PASSWORD`、`CLICKHOUSE_DB`、`SUPERSET_SECRET_KEY`、`SUPERSET_ADMIN_PASSWORD`、`CLICKHOUSE_SQLALCHEMY_URI` 以及公开端口变量。
+
+所有公开端口默认只绑定 `127.0.0.1`。共享或生产部署前必须设置自己的凭证、配置 TLS 与备份，并确保 decoder/license 文件不进入 Git。
 
 停止服务但保留 named volumes：
 

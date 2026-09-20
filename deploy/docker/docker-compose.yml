@@ -2,18 +2,25 @@ services:
   redis:
     image: redis:7-alpine
     restart: unless-stopped
-    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD:-sensorflow-dev}"]
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+    command:
+      - /bin/sh
+      - -c
+      - |
+        if [ -n "$$REDIS_PASSWORD" ]; then
+          exec redis-server --appendonly yes --requirepass "$$REDIS_PASSWORD"
+        fi
+        exec redis-server --appendonly yes
     ports:
       - "127.0.0.1:${REDIS_PORT:-6379}:6379"
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" ping"]
+      test: ["CMD-SHELL", "if [ -n \"$$REDIS_PASSWORD\" ]; then redis-cli -a \"$$REDIS_PASSWORD\" ping; else redis-cli ping; fi"]
       interval: 10s
       timeout: 5s
       retries: 10
-    environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD:-sensorflow-dev}
     networks:
       - sensorflow
 
@@ -23,7 +30,7 @@ services:
     environment:
       CLICKHOUSE_DB: ${CLICKHOUSE_DB:-sensors}
       CLICKHOUSE_USER: ${CLICKHOUSE_USER:-default}
-      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-sensorflow-dev}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-}
       CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
     ports:
       - "127.0.0.1:${CLICKHOUSE_HTTP_PORT:-8123}:8123"
@@ -32,7 +39,7 @@ services:
       - clickhouse_data:/var/lib/clickhouse
       - ./clickhouse/init_clickhouse.sql:/docker-entrypoint-initdb.d/init_clickhouse.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "clickhouse-client --password \"$$CLICKHOUSE_PASSWORD\" --query 'SELECT 1'"]
+      test: ["CMD-SHELL", "if [ -n \"$$CLICKHOUSE_PASSWORD\" ]; then clickhouse-client --password \"$$CLICKHOUSE_PASSWORD\" --query 'SELECT 1'; else clickhouse-client --query 'SELECT 1'; fi"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -45,6 +52,14 @@ services:
       dockerfile: deploy/docker/Dockerfile.ingestion
     image: sensorflow-ingestion:local
     restart: unless-stopped
+    environment:
+      REDIS_HOST: ${REDIS_HOST:-redis:6379}
+      REDIS_TYPE: ${REDIS_TYPE:-node}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      CLICKHOUSE_HOST: ${CLICKHOUSE_HOST:-clickhouse:9000}
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-default}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-}
+      CLICKHOUSE_DB: ${CLICKHOUSE_DB:-sensors}
     ports:
       - "127.0.0.1:${SENSORFLOW_PORT:-8081}:8081"
     volumes:
@@ -64,12 +79,12 @@ services:
     image: sensorflow-superset:local
     restart: unless-stopped
     environment:
-      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY:-sensorflow-local-development-secret-change-in-production}
+      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY:?Set SUPERSET_SECRET_KEY in your environment or .env file}
       SUPERSET_ADMIN_USERNAME: ${SUPERSET_ADMIN_USERNAME:-admin}
-      SUPERSET_ADMIN_PASSWORD: ${SUPERSET_ADMIN_PASSWORD:-sensorflow-dev}
+      SUPERSET_ADMIN_PASSWORD: ${SUPERSET_ADMIN_PASSWORD:?Set SUPERSET_ADMIN_PASSWORD in your environment or .env file}
       SUPERSET_ADMIN_EMAIL: ${SUPERSET_ADMIN_EMAIL:-support@sensorflow.site}
       SUPERSET_PUBLIC_BASE_URL: ${SUPERSET_PUBLIC_BASE_URL:-http://localhost:8088/}
-      CLICKHOUSE_SQLALCHEMY_URI: ${CLICKHOUSE_SQLALCHEMY_URI:-clickhousedb://default:sensorflow-dev@clickhouse:8123/sensors}
+      CLICKHOUSE_SQLALCHEMY_URI: ${CLICKHOUSE_SQLALCHEMY_URI:-clickhousedb://default:@clickhouse:8123/sensors}
     ports:
       - "127.0.0.1:${SUPERSET_PORT:-8088}:8088"
     volumes:

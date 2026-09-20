@@ -45,6 +45,8 @@ test -x binaries/licenses/current/decoder
 
 ```bash
 cd deploy/docker
+cp .env.example .env
+# 编辑 .env，设置自己的 SUPERSET_SECRET_KEY 和 SUPERSET_ADMIN_PASSWORD。
 docker compose up -d --build
 docker compose ps
 ```
@@ -69,17 +71,17 @@ https://your-sensorflow.example/sensors/send/?token=YOUR_TOKEN
 ```bash
 cd deploy/docker
 docker compose exec -T clickhouse clickhouse-client \
-  --password "${CLICKHOUSE_PASSWORD:-sensorflow-dev}" \
+  ${CLICKHOUSE_PASSWORD:+--password "$CLICKHOUSE_PASSWORD"} \
   --query "SELECT time, event, distinct_id FROM sensors.event WHERE event = 'integration_test' ORDER BY time DESC LIMIT 10"
 ```
 
-Superset 地址为 `http://127.0.0.1:8088`，本地默认账号为 `admin` / `sensorflow-dev`。
+Superset 地址为 `http://127.0.0.1:8088`。启动前由用户设置 `SUPERSET_ADMIN_PASSWORD`，项目不定义用户密码。
 
 ## 生产要求
 
-默认凭证只适用于本机验证。生产部署前必须：
+项目不定义 Redis、ClickHouse、MySQL 或客户账号密码。仅当密码变量为空时，Redis 与 ClickHouse 才以无密码模式启动，并且端口仍只绑定 `127.0.0.1`。生产部署前必须：
 
-- 覆盖 Redis、ClickHouse、Superset 密码和 `SUPERSET_SECRET_KEY`。
+- 设置 `REDIS_PASSWORD`、`CLICKHOUSE_PASSWORD`、`SUPERSET_ADMIN_PASSWORD`、`SUPERSET_SECRET_KEY`，以及密码经过 URL 编码且保持一致的 `CLICKHOUSE_SQLALCHEMY_URI`。
 - 通过反向代理提供 TLS，仅暴露必要的接收路径。
 - 保持数据库端口不公开，配置备份，并监控 decoder 失败、接收延迟和 ClickHouse 磁盘水位。
 - 根据发布策略固定并审核容器镜像版本。
