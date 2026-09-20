@@ -18,7 +18,7 @@ Send an `integration_test` event, query it in ClickHouse, then run the same quer
 
 ## Why is a request rejected?
 
-Confirm the license file at `binaries/sensors-payload-decoder`, request URL, and server logs. The license rejects processing when its embedded authorization check fails.
+Confirm the license file at `binaries/sensors-payload-license`, request URL, and server logs. The license rejects processing when its embedded authorization check fails.
 
 ## Can I use this in production?
 

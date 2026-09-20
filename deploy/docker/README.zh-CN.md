@@ -1,6 +1,6 @@
 # Docker 部署
 
-部署分为两个阶段。第一阶段无需许可证，启动 Redis、ClickHouse 和 Apache Superset，导入明确标记的演示事件并创建演示看板；第二阶段把购买后的许可证安装到 `binaries/sensors-payload-decoder`，最后才启动 Go 接收服务。
+部署分为两个阶段。第一阶段无需许可证，启动 Redis、ClickHouse 和 Apache Superset，导入明确标记的演示事件并创建演示看板；第二阶段把购买后的许可证安装到 `binaries/sensors-payload-license`，最后才启动 Go 接收服务。
 
 在仓库根目录运行 `./install.sh`。安装器会检测已有 Redis 与 ClickHouse、生成缺失凭证、写入私有 `.env`、导入演示数据并启动 Superset，不要求许可证，也不会启动 ingestion。
 

@@ -39,7 +39,7 @@ cd sensorFlow
 ./activate.sh
 ```
 
-激活程序会把许可证自动安装为 `binaries/sensors-payload-decoder`，配套验证文件安装为 `binaries/sensors-payload-decoder.verify.json`，最后才启动 ingestion。已有 Redis、ClickHouse、Superset、演示数据和私有配置均不会被覆盖。
+激活程序会把许可证自动安装为 `binaries/sensors-payload-license`，配套验证文件安装为 `binaries/sensors-payload-license.verify.json`，最后才启动 ingestion。已有 Redis、ClickHouse、Superset、演示数据和私有配置均不会被覆盖。
 
 Compose 会启动 Go 接收服务、Redis、ClickHouse 和 Apache Superset。默认端口只绑定 `127.0.0.1`：
 

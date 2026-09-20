@@ -1,7 +1,7 @@
 .DS_Store
 sensors
-binaries/sensors-payload-decoder
-binaries/sensors-payload-decoder.verify.json
+binaries/sensors-payload-license
+binaries/sensors-payload-license.verify.json
 sensorflow-license-*
 *.verify.json
 deploy/docker/.env

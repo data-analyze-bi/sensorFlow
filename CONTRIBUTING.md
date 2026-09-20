@@ -6,7 +6,7 @@ Thank you for improving SensorFlow. Bug reports, documentation corrections, repr
 
 1. Fork and clone the repository.
 2. Start the local stack with `cd deploy/docker && docker compose up -d --build`.
-3. Install a valid customer license at `binaries/sensors-payload-decoder` when testing the production ingestion path.
+3. Install a valid customer license at `binaries/sensors-payload-license` when testing the production ingestion path.
 4. Send an `integration_test` event from an official Sensors Data SDK and verify its ClickHouse row.
 5. Run the checks below before opening a pull request.
 

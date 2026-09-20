@@ -12,8 +12,8 @@ prompt() {
 }
 
 install_license() {
-  local license_target="$ROOT_DIR/binaries/sensors-payload-decoder"
-  local verify_target="$ROOT_DIR/binaries/sensors-payload-decoder.verify.json"
+  local license_target="$ROOT_DIR/binaries/sensors-payload-license"
+  local verify_target="$ROOT_DIR/binaries/sensors-payload-license.verify.json"
   local license_path="" verify_path="" candidate
   local candidates=()
 
@@ -25,7 +25,7 @@ install_license() {
   while IFS= read -r candidate; do
     candidates+=("$candidate")
   done < <(find "$ROOT_DIR" "$HOME/Downloads" -maxdepth 3 -type f \
-    \( -name 'sensorflow-license-*' -o -name 'sensors-payload-decoder-*' -o -name 'sensors-payload-decoder' \) \
+    -name 'sensorflow-license-*' \
     ! -path "$license_target" 2>/dev/null | sort -u)
 
   if ((${#candidates[@]} == 1)); then

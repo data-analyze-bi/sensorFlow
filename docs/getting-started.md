@@ -6,7 +6,7 @@ SensorFlow is an open-source, self-hosted product analytics platform. This guide
 
 - Docker Engine or Docker Desktop with Docker Compose
 - Go 1.17 or newer
-- A SensorFlow license installed at `binaries/sensors-payload-decoder` as described in the main README
+- A SensorFlow license installed at `binaries/sensors-payload-license` as described in the main README
 
 ## Start the stack
 

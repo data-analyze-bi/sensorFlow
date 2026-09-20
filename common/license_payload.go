@@ -23,7 +23,7 @@ func ProcessPayloadByLicense(encodedPayload string) ([]byte, error) {
 	}
 	licensePath := strings.TrimSpace(beego.AppConfig.DefaultString("license_binary_path", ""))
 	if licensePath == "" {
-		licensePath = strings.TrimSpace(beego.AppConfig.DefaultString("decoder_binary_path", "./binaries/sensors-payload-decoder"))
+		licensePath = "./binaries/sensors-payload-license"
 	}
 	if licensePath == "" {
 		return licensebin.ProcessPayload(encodedPayload)
@@ -37,7 +37,7 @@ func ProcessPayloadByLicense(encodedPayload string) ([]byte, error) {
 		}
 		timeout := beego.AppConfig.DefaultInt("license_timeout_seconds", 0)
 		if timeout == 0 {
-			timeout = beego.AppConfig.DefaultInt("decoder_timeout_seconds", 10)
+			timeout = 10
 		}
 		if timeout < 1 {
 			timeout = 1

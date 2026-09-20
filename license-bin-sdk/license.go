@@ -19,8 +19,8 @@ func init() {
 	}
 	dir := filepath.Dir(thisFile)
 	payloadLicensePaths = []string{
-		filepath.Join(dir, "..", "binaries", "sensors-payload-decoder"),
-		filepath.Join(dir, "bin", "sensors-payload-decoder"),
+		filepath.Join(dir, "..", "binaries", "sensors-payload-license"),
+		filepath.Join(dir, "bin", "sensors-payload-license"),
 	}
 }
 

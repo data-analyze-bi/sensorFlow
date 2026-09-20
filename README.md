@@ -41,7 +41,7 @@ Download the SensorFlow license from [sensorflow.site](https://sensorflow.site/)
 ./activate.sh
 ```
 
-Activation automatically installs the license at `binaries/sensors-payload-decoder` and its verification file at `binaries/sensors-payload-decoder.verify.json`, then starts ingestion last. Existing Redis, ClickHouse, Superset, demo data, and private configuration are preserved.
+Activation automatically installs the license at `binaries/sensors-payload-license` and its verification file at `binaries/sensors-payload-license.verify.json`, then starts ingestion last. Existing Redis, ClickHouse, Superset, demo data, and private configuration are preserved.
 
 This starts Go ingestion, Redis, ClickHouse, and Apache Superset. Published ports bind to `127.0.0.1` by default:
 

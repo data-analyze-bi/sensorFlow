@@ -1,6 +1,6 @@
 # Docker deployment
 
-The deployment has two stages. Stage 1 starts Redis, ClickHouse, and Apache Superset, imports labeled demo events, and creates the demo dashboard without requiring a license. Stage 2 installs the purchased SensorFlow license at `binaries/sensors-payload-decoder` and starts Go ingestion last.
+The deployment has two stages. Stage 1 starts Redis, ClickHouse, and Apache Superset, imports labeled demo events, and creates the demo dashboard without requiring a license. Stage 2 installs the purchased SensorFlow license at `binaries/sensors-payload-license` and starts Go ingestion last.
 
 Run `../../install.sh` from the repository root. It detects existing Redis and ClickHouse services, generates missing credentials, writes the private `.env`, imports demo data, and starts Superset. It does not request a license or start ingestion.
 
