@@ -23,31 +23,15 @@ SensorFlow 是独立项目，与神策数据不存在关联、背书或官方认
 - 购买后获得的有效 SensorFlow payload decoder 和验证/许可证文件
 - 业务应用中已配置的神策官方 SDK
 
-克隆仓库，然后把交付文件安装到版本目录：
+克隆仓库并运行一键安装：
 
 ```bash
 git clone https://github.com/data-analyze-bi/sensorFlow.git
 cd sensorFlow
-mkdir -p binaries/licenses/customer
-mv ~/Downloads/sensors-payload-decoder-* binaries/licenses/customer/decoder
-mv ~/Downloads/*.verify.json binaries/licenses/customer/decoder.verify.json
-chmod +x binaries/licenses/customer/decoder
-ln -sfn customer binaries/licenses/current
-```
-
-不要提交 decoder 或许可证文件。Compose 会把 `binaries/licenses` 以只读方式挂载到接收服务。启动前检查可执行文件：
-
-```bash
-test -x binaries/licenses/current/decoder
-```
-
-运行一键安装：
-
-```bash
 ./install.sh
 ```
 
-安装器会检测本机标准端口上的 Redis 和 ClickHouse。均未安装时，自动生成强随机凭证并启动隔离的内置容器；检测到已有服务时，会询问是否复用，并在安装过程中要求填写连接信息。最终私有配置自动写入权限为 `600` 的 `deploy/docker/.env`，用户无需手工创建或编辑。
+安装器会先在仓库和 `~/Downloads` 中搜索购买后下载的 decoder 与配套 `*.verify.json`。无法安全确定唯一文件时，会现场询问下载文件路径并自动完成目录创建、复制、权限和软链接配置。随后检测本机 Redis 和 ClickHouse：均未安装时自动生成强随机凭证并启动隔离容器；检测到已有服务时询问是否复用及连接信息。最终私有配置自动写入权限为 `600` 的 `deploy/docker/.env`，用户无需手工创建目录、软链接或配置文件。
 
 Compose 会启动 Go 接收服务、Redis、ClickHouse 和 Apache Superset。默认端口只绑定 `127.0.0.1`：
 

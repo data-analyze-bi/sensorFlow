@@ -23,31 +23,15 @@ Prerequisites:
 - A valid SensorFlow payload decoder and verification/license file supplied after purchase
 - An official Sensors Data SDK client configured for your application
 
-Clone the repository, then install the supplied files under a versioned directory:
+Clone the repository and run the installer:
 
 ```bash
 git clone https://github.com/data-analyze-bi/sensorFlow.git
 cd sensorFlow
-mkdir -p binaries/licenses/customer
-mv ~/Downloads/sensors-payload-decoder-* binaries/licenses/customer/decoder
-mv ~/Downloads/*.verify.json binaries/licenses/customer/decoder.verify.json
-chmod +x binaries/licenses/customer/decoder
-ln -sfn customer binaries/licenses/current
-```
-
-Do not commit decoder or license files. Compose mounts `binaries/licenses` read-only into ingestion. Verify the executable exists before startup:
-
-```bash
-test -x binaries/licenses/current/decoder
-```
-
-Run the installer:
-
-```bash
 ./install.sh
 ```
 
-The installer detects Redis and ClickHouse on standard local ports. If neither exists, it generates strong random credentials and starts isolated bundled containers. If an existing service is detected, it asks whether to reuse it and prompts for its connection details. It writes the resulting private configuration to `deploy/docker/.env` with mode `600`; users do not create or edit that file manually.
+The installer first searches the repository and `~/Downloads` for the purchased decoder and matching `*.verify.json`. If it cannot identify one file safely, it asks for the downloaded file path and installs it automatically. It then detects Redis and ClickHouse on standard local ports. If neither exists, it generates strong random credentials and starts isolated bundled containers. If an existing service is detected, it asks whether to reuse it and prompts for its connection details. It writes the resulting private configuration to `deploy/docker/.env` with mode `600`; users do not create directories, symlinks, or configuration files manually.
 
 This starts Go ingestion, Redis, ClickHouse, and Apache Superset. Published ports bind to `127.0.0.1` by default:
 

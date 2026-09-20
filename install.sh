@@ -69,6 +69,64 @@ wait_for_service() {
   return 1
 }
 
+install_decoder() {
+  local decoder_target="$ROOT_DIR/binaries/licenses/customer/decoder"
+  local license_dir="$ROOT_DIR/binaries/licenses/customer"
+  local decoder_path="" verify_path=""
+  local candidates=()
+
+  if [[ -x "$ROOT_DIR/binaries/licenses/current/decoder" ]]; then
+    return 0
+  fi
+
+  while IFS= read -r candidate; do
+    candidates+=("$candidate")
+  done < <(find "$ROOT_DIR" "$HOME/Downloads" -maxdepth 3 -type f \
+    \( -name 'sensors-payload-decoder-*' -o -name 'sensors-payload-decoder' -o -name 'decoder' \) \
+    ! -path '*/binaries/licenses/customer/decoder' 2>/dev/null | sort -u)
+
+  if ((${#candidates[@]} == 1)); then
+    decoder_path="${candidates[0]}"
+    echo "检测到 decoder：$decoder_path"
+  elif ((${#candidates[@]} > 1)); then
+    echo "检测到多个 decoder 候选："
+    printf '  %s\n' "${candidates[@]}"
+  fi
+
+  while [[ ! -f "$decoder_path" ]]; do
+    decoder_path="$(prompt '请输入购买后下载的 decoder 文件路径')"
+    decoder_path="${decoder_path/#\~/$HOME}"
+    if [[ ! -f "$decoder_path" ]]; then
+      echo "文件不存在：$decoder_path" >&2
+      decoder_path=""
+    fi
+  done
+
+  mkdir -p "$license_dir"
+  cp "$decoder_path" "$decoder_target"
+  chmod 700 "$decoder_target"
+
+  local decoder_source_dir
+  decoder_source_dir="$(cd "$(dirname "$decoder_path")" && pwd)"
+  while IFS= read -r candidate; do
+    verify_path="$candidate"
+    break
+  done < <(find "$decoder_source_dir" -maxdepth 1 -type f -name '*.verify.json' 2>/dev/null | sort)
+
+  if [[ -z "$verify_path" ]]; then
+    verify_path="$(prompt '请输入配套 verify.json 路径（没有则直接回车）')"
+    verify_path="${verify_path/#\~/$HOME}"
+  fi
+  if [[ -n "$verify_path" ]]; then
+    [[ -f "$verify_path" ]] || { echo "验证文件不存在：$verify_path" >&2; exit 1; }
+    cp "$verify_path" "$license_dir/decoder.verify.json"
+    chmod 600 "$license_dir/decoder.verify.json"
+  fi
+
+  ln -sfn customer "$ROOT_DIR/binaries/licenses/current"
+  echo "decoder 已安装到 binaries/licenses/customer/decoder"
+}
+
 validate_external_redis() {
 	local host_port="$1" password="$2" host port
 	host="${host_port%:*}"
@@ -100,11 +158,7 @@ docker compose version >/dev/null || { echo "请先安装 Docker Compose v2。" 
 command -v openssl >/dev/null || { echo "缺少 openssl，无法安全生成密码。" >&2; exit 1; }
 command -v nc >/dev/null || { echo "缺少 nc，无法检测已有服务。" >&2; exit 1; }
 
-if [[ ! -x "$ROOT_DIR/binaries/licenses/current/decoder" ]]; then
-  echo "未找到可执行 decoder：binaries/licenses/current/decoder" >&2
-  echo "请先安装购买后获得的 decoder/license，再重新运行 ./install.sh。" >&2
-  exit 1
-fi
+install_decoder
 
 use_external_redis=false
 if port_open 6379 && yes_no "检测到本机 Redis (6379)，是否复用"; then
