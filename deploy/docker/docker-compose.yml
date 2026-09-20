@@ -49,6 +49,7 @@ services:
       - sensorflow
 
   ingestion:
+    profiles: ["ingestion"]
     build:
       context: ../..
       dockerfile: deploy/docker/Dockerfile.ingestion

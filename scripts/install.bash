@@ -69,64 +69,6 @@ wait_for_service() {
   return 1
 }
 
-install_decoder() {
-  local decoder_target="$ROOT_DIR/binaries/licenses/customer/decoder"
-  local license_dir="$ROOT_DIR/binaries/licenses/customer"
-  local decoder_path="" verify_path=""
-  local candidates=()
-
-  if [[ -x "$ROOT_DIR/binaries/licenses/current/decoder" ]]; then
-    return 0
-  fi
-
-  while IFS= read -r candidate; do
-    candidates+=("$candidate")
-  done < <(find "$ROOT_DIR" "$HOME/Downloads" -maxdepth 3 -type f \
-    \( -name 'sensors-payload-decoder-*' -o -name 'sensors-payload-decoder' -o -name 'decoder' \) \
-    ! -path '*/binaries/licenses/customer/decoder' 2>/dev/null | sort -u)
-
-  if ((${#candidates[@]} == 1)); then
-    decoder_path="${candidates[0]}"
-    echo "检测到 decoder：$decoder_path"
-  elif ((${#candidates[@]} > 1)); then
-    echo "检测到多个 decoder 候选："
-    printf '  %s\n' "${candidates[@]}"
-  fi
-
-  while [[ ! -f "$decoder_path" ]]; do
-    decoder_path="$(prompt '请输入购买后下载的 decoder 文件路径')"
-    decoder_path="${decoder_path/#\~/$HOME}"
-    if [[ ! -f "$decoder_path" ]]; then
-      echo "文件不存在：$decoder_path" >&2
-      decoder_path=""
-    fi
-  done
-
-  mkdir -p "$license_dir"
-  cp "$decoder_path" "$decoder_target"
-  chmod 700 "$decoder_target"
-
-  local decoder_source_dir
-  decoder_source_dir="$(cd "$(dirname "$decoder_path")" && pwd)"
-  while IFS= read -r candidate; do
-    verify_path="$candidate"
-    break
-  done < <(find "$decoder_source_dir" -maxdepth 1 -type f -name '*.verify.json' 2>/dev/null | sort)
-
-  if [[ -z "$verify_path" ]]; then
-    verify_path="$(prompt '请输入配套 verify.json 路径（没有则直接回车）')"
-    verify_path="${verify_path/#\~/$HOME}"
-  fi
-  if [[ -n "$verify_path" ]]; then
-    [[ -f "$verify_path" ]] || { echo "验证文件不存在：$verify_path" >&2; exit 1; }
-    cp "$verify_path" "$license_dir/decoder.verify.json"
-    chmod 600 "$license_dir/decoder.verify.json"
-  fi
-
-  ln -sfn customer "$ROOT_DIR/binaries/licenses/current"
-  echo "decoder 已安装到 binaries/licenses/customer/decoder"
-}
-
 validate_external_redis() {
 	local host_port="$1" password="$2" host port
 	host="${host_port%:*}"
@@ -157,8 +99,6 @@ command -v docker >/dev/null || { echo "请先安装 Docker。" >&2; exit 1; }
 docker compose version >/dev/null || { echo "请先安装 Docker Compose v2。" >&2; exit 1; }
 command -v openssl >/dev/null || { echo "缺少 openssl，无法安全生成密码。" >&2; exit 1; }
 command -v nc >/dev/null || { echo "缺少 nc，无法检测已有服务。" >&2; exit 1; }
-
-install_decoder
 
 use_external_redis=false
 if port_open 6379 && yes_no "检测到本机 Redis (6379)，是否复用"; then
@@ -238,15 +178,31 @@ else
   wait_for_service clickhouse
 fi
 
-docker compose up -d --build ingestion superset
+clickhouse_client=(clickhouse-client --host "${clickhouse_host%:*}" --port "${clickhouse_host##*:}" --user "$clickhouse_user")
+if [[ -n "$clickhouse_password" ]]; then
+  clickhouse_client+=(--password "$clickhouse_password")
+fi
+if $use_external_clickhouse; then
+  docker run --rm --add-host host.docker.internal:host-gateway \
+    -v "$COMPOSE_DIR/clickhouse/demo_data.sql:/demo_data.sql:ro" \
+    clickhouse/clickhouse-server:23.8 "${clickhouse_client[@]}" --multiquery --queries-file /demo_data.sql
+else
+  docker compose exec -T clickhouse "${clickhouse_client[@]}" --multiquery --queries-file /dev/stdin <clickhouse/demo_data.sql
+fi
+
+docker compose up -d --build superset
 docker compose ps
 
 cat <<EOF
 
-SensorFlow 已启动。
-Ingestion: http://127.0.0.1:8081
+SensorFlow 演示环境已启动（尚未启动真实埋点接收服务）。
 Superset:  http://127.0.0.1:8088
+演示看板: http://127.0.0.1:8088/superset/dashboard/sensorflow-events-overview/
 Superset 用户名: admin
 Superset 初始密码: $superset_password
 私有配置已保存到 deploy/docker/.env（权限 600）。
+
+下一步：先查看 Superset 演示数据和图表。
+需要接入真实神策 SDK 数据时，请到 https://sensorflow.site/ 获取许可证，
+下载 decoder/license 后运行：./activate.sh
 EOF

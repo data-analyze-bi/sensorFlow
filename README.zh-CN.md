@@ -4,7 +4,7 @@
 
 # SensorFlow
 
-**面向已购买 SensorFlow 授权用户的开源、自托管事件分析平台：保留现有神策 SDK 埋点，将数据存入自己的 ClickHouse。**
+**开源、自托管事件分析平台：先部署并查看 Superset 演示图表，确认价值后再用许可证激活真实神策 SDK 埋点接收。**
 
 ```text
 神策各端 SDK ──> Go 数据接收 ──> ClickHouse ──> Apache Superset
@@ -15,13 +15,11 @@ SensorFlow 是独立项目，与神策数据不存在关联、背书或官方认
 
 [English](README.md) · [中文文档](docs/getting-started.zh-CN.md) · [官网](https://sensorflow.site/) · [Apache-2.0 许可证](LICENSE)
 
-## 付费用户部署
+## 第一阶段：部署并查看演示
 
 前置条件：
 
 - Docker Engine 或 Docker Desktop 与 Docker Compose v2
-- 购买后获得的有效 SensorFlow payload decoder 和验证/许可证文件
-- 业务应用中已配置的神策官方 SDK
 
 克隆仓库并运行一键安装：
 
@@ -31,7 +29,17 @@ cd sensorFlow
 ./install.sh
 ```
 
-安装器会先在仓库和 `~/Downloads` 中搜索购买后下载的 decoder 与配套 `*.verify.json`。无法安全确定唯一文件时，会现场询问下载文件路径并自动完成目录创建、复制、权限和软链接配置。随后检测本机 Redis 和 ClickHouse：均未安装时自动生成强随机凭证并启动隔离容器；检测到已有服务时询问是否复用及连接信息。最终私有配置自动写入权限为 `600` 的 `deploy/docker/.env`，用户无需手工创建目录、软链接或配置文件。
+第一阶段不需要许可证。安装器会检测 Redis 和 ClickHouse、启动缺失服务、导入明确标记为 `demo_*` 的演示事件，并创建 Superset 数据集与看板，最后显示登录信息。此时不会启动真实 SDK 埋点接收服务。
+
+## 第二阶段：激活真实埋点接收
+
+确认演示效果后，到 [sensorflow.site](https://sensorflow.site/) 下载 decoder/license，保留在 `~/Downloads` 并执行：
+
+```bash
+./activate.sh
+```
+
+激活程序会自动安装 decoder 与验证文件，最后才启动 ingestion。已有 Redis、ClickHouse、Superset、演示数据和私有配置均不会被覆盖。
 
 Compose 会启动 Go 接收服务、Redis、ClickHouse 和 Apache Superset。默认端口只绑定 `127.0.0.1`：
 
@@ -40,7 +48,7 @@ Compose 会启动 Go 接收服务、Redis、ClickHouse 和 Apache Superset。默
 - Redis：`127.0.0.1:6379`
 - Superset：`127.0.0.1:8088`
 
-## 接入神策 SDK
+## 激活后接入神策 SDK
 
 保留现有 SDK 埋点代码，只需把上报地址指向 SensorFlow：
 

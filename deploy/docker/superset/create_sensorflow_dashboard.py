@@ -86,7 +86,7 @@ def chart_specs():
 
     p = base_params("pie")
     p.update({
-        "groupby": ["$os"],
+        "groupby": ["os"],
         "metric": metric_count("事件数"),
         "row_limit": 10,
         "show_labels": True,
@@ -99,18 +99,18 @@ def chart_specs():
     p = base_params("table")
     p.update({
         "query_mode": "aggregate",
-        "groupby": ["lt_page_name"],
-        "metrics": [metric_count("事件数"), metric_sql("平均停留ms", "avg(toFloat64OrZero(lt_duration_ms))")],
+        "groupby": ["app_version"],
+        "metrics": [metric_count("事件数")],
         "order_by_cols": [json.dumps(["事件数", False])],
         "row_limit": 20,
         "server_page_length": 20,
         "show_cell_bars": True,
     })
-    specs.append(("页面分布与平均耗时", "table", p))
+    specs.append(("应用版本分布", "table", p))
 
     p = base_params("pie")
     p.update({
-        "groupby": ["$network_type"],
+        "groupby": ["network_type"],
         "metric": metric_count("事件数"),
         "row_limit": 10,
         "show_labels": True,

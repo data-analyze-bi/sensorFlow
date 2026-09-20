@@ -4,7 +4,7 @@
 
 # SensorFlow
 
-**Open-source, self-hosted event analytics for licensed SensorFlow customers. Keep existing Sensors Data SDK instrumentation and own the resulting ClickHouse data.**
+**Open-source, self-hosted event analytics. Start with a working Superset demo, then activate licensed Sensors Data SDK ingestion when ready.**
 
 ```text
 Sensors Data SDKs ──> Go ingestion ──> ClickHouse ──> Apache Superset
@@ -17,11 +17,11 @@ SensorFlow is independent from Sensors Data and is not endorsed or certified by 
 
 ## Customer deployment
 
+## Stage 1: deploy and view the demo
+
 Prerequisites:
 
 - Docker Engine or Docker Desktop with Docker Compose v2
-- A valid SensorFlow payload decoder and verification/license file supplied after purchase
-- An official Sensors Data SDK client configured for your application
 
 Clone the repository and run the installer:
 
@@ -31,7 +31,17 @@ cd sensorFlow
 ./install.sh
 ```
 
-The installer first searches the repository and `~/Downloads` for the purchased decoder and matching `*.verify.json`. If it cannot identify one file safely, it asks for the downloaded file path and installs it automatically. It then detects Redis and ClickHouse on standard local ports. If neither exists, it generates strong random credentials and starts isolated bundled containers. If an existing service is detected, it asks whether to reuse it and prompts for its connection details. It writes the resulting private configuration to `deploy/docker/.env` with mode `600`; users do not create directories, symlinks, or configuration files manually.
+This stage does not require a license. The installer detects Redis and ClickHouse, starts missing services, imports clearly labeled `demo_*` events, creates the Superset dataset and dashboard, and prints the Superset login. It does not start the real SDK ingestion service.
+
+## Stage 2: activate real event ingestion
+
+Get the decoder/license from [sensorflow.site](https://sensorflow.site/), leave the downloaded files in `~/Downloads`, then run:
+
+```bash
+./activate.sh
+```
+
+Activation automatically installs the decoder and verification file, then starts ingestion last. Existing Redis, ClickHouse, Superset, demo data, and private configuration are preserved.
 
 This starts Go ingestion, Redis, ClickHouse, and Apache Superset. Published ports bind to `127.0.0.1` by default:
 
@@ -40,7 +50,7 @@ This starts Go ingestion, Redis, ClickHouse, and Apache Superset. Published port
 - Redis: `127.0.0.1:6379`
 - Superset: `127.0.0.1:8088`
 
-## Connect a Sensors Data SDK
+## Connect a Sensors Data SDK after activation
 
 Keep the existing SDK instrumentation and point its upload URL to SensorFlow:
 

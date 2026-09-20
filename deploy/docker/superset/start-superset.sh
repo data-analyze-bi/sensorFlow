@@ -12,6 +12,7 @@ superset fab create-admin \
 
 superset init
 python /app/pythonpath/setup_clickhouse.py
+python /app/pythonpath/create_sensorflow_dashboard.py
 
 exec gunicorn \
   --bind 0.0.0.0:8088 \
