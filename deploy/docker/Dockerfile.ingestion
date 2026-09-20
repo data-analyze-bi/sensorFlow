@@ -1,0 +1,14 @@
+FROM golang:1.24-bookworm AS build
+WORKDIR /src
+COPY go.mod go.sum ./
+COPY decoder-bin-sdk/go.mod decoder-bin-sdk/go.sum ./decoder-bin-sdk/
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 go build -o /out/sensorflow main.go
+
+FROM gcr.io/distroless/static-debian12:nonroot
+WORKDIR /app
+COPY --from=build /out/sensorflow /app/sensorflow
+COPY deploy/docker/app.docker.conf /app/conf/app.conf
+EXPOSE 8081
+ENTRYPOINT ["/app/sensorflow"]

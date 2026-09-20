@@ -1,36 +1,8 @@
 services:
-  mysql:
-    image: mysql:8.0
-    container_name: sensorflow_mysql
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-sensors}
-      MYSQL_USER: ${MYSQL_USER:-sensorflow}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?set MYSQL_PASSWORD}
-      TZ: ${TZ:-UTC}
-    ports:
-      - "127.0.0.1:${MYSQL_PORT:-3306}:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./mysql/init_mysql.sql:/docker-entrypoint-initdb.d/init_mysql.sql:ro
-    command:
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
-      - --default-authentication-plugin=mysql_native_password
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD}"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-    networks:
-      - sensorflow
-
   redis:
     image: redis:7-alpine
-    container_name: sensorflow_redis
     restart: unless-stopped
-    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD:?set REDIS_PASSWORD}"]
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD:-sensorflow-dev}"]
     ports:
       - "127.0.0.1:${REDIS_PORT:-6379}:6379"
     volumes:
@@ -41,18 +13,17 @@ services:
       timeout: 5s
       retries: 10
     environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD:?set REDIS_PASSWORD}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-sensorflow-dev}
     networks:
       - sensorflow
 
   clickhouse:
     image: clickhouse/clickhouse-server:23.8
-    container_name: sensorflow_clickhouse
     restart: unless-stopped
     environment:
       CLICKHOUSE_DB: ${CLICKHOUSE_DB:-sensors}
       CLICKHOUSE_USER: ${CLICKHOUSE_USER:-default}
-      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:?set CLICKHOUSE_PASSWORD}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-sensorflow-dev}
       CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
     ports:
       - "127.0.0.1:${CLICKHOUSE_HTTP_PORT:-8123}:8123"
@@ -68,20 +39,37 @@ services:
     networks:
       - sensorflow
 
+  ingestion:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.ingestion
+    image: sensorflow-ingestion:local
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${SENSORFLOW_PORT:-8081}:8081"
+    volumes:
+      - ../../binaries/licenses:/app/binaries/licenses:ro
+    depends_on:
+      redis:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+    networks:
+      - sensorflow
+
   superset:
     build:
       context: ./superset
       dockerfile: Dockerfile.server
     image: sensorflow-superset:local
-    container_name: sensorflow_superset
     restart: unless-stopped
     environment:
-      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY:?set SUPERSET_SECRET_KEY}
+      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY:-sensorflow-local-development-secret-change-in-production}
       SUPERSET_ADMIN_USERNAME: ${SUPERSET_ADMIN_USERNAME:-admin}
-      SUPERSET_ADMIN_PASSWORD: ${SUPERSET_ADMIN_PASSWORD:?set SUPERSET_ADMIN_PASSWORD}
+      SUPERSET_ADMIN_PASSWORD: ${SUPERSET_ADMIN_PASSWORD:-sensorflow-dev}
       SUPERSET_ADMIN_EMAIL: ${SUPERSET_ADMIN_EMAIL:-support@sensorflow.site}
       SUPERSET_PUBLIC_BASE_URL: ${SUPERSET_PUBLIC_BASE_URL:-http://localhost:8088/}
-      CLICKHOUSE_SQLALCHEMY_URI: ${CLICKHOUSE_SQLALCHEMY_URI:?set CLICKHOUSE_SQLALCHEMY_URI}
+      CLICKHOUSE_SQLALCHEMY_URI: ${CLICKHOUSE_SQLALCHEMY_URI:-clickhousedb://default:sensorflow-dev@clickhouse:8123/sensors}
     ports:
       - "127.0.0.1:${SUPERSET_PORT:-8088}:8088"
     volumes:
@@ -95,7 +83,6 @@ services:
       - sensorflow
 
 volumes:
-  mysql_data:
   redis_data:
   clickhouse_data:
   superset_home:

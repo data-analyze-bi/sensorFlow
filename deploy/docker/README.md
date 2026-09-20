@@ -1,26 +1,21 @@
-# Docker Deployment
+# Docker deployment
 
-This stack runs MySQL, Redis, ClickHouse, and Apache Superset. Run the Go ingestion service separately from the repository root.
+This stack is for licensed SensorFlow customers and starts Go ingestion, Redis, ClickHouse, and Apache Superset.
+
+Before startup, install the supplied executable decoder at `../../binaries/licenses/current/decoder` and its verification/license file in the same version directory. The licenses directory is mounted read-only.
 
 ```bash
-export MYSQL_ROOT_PASSWORD='replace-with-strong-password'
-export MYSQL_PASSWORD='replace-with-strong-password'
-export REDIS_PASSWORD='replace-with-strong-password'
-export CLICKHOUSE_PASSWORD='replace-with-strong-password'
-export SUPERSET_SECRET_KEY='replace-with-long-random-secret'
-export SUPERSET_ADMIN_PASSWORD='replace-with-strong-password'
-export CLICKHOUSE_SQLALCHEMY_URI='clickhousedb://default:replace-with-url-encoded-password@clickhouse:8123/sensors'
+test -x ../../binaries/licenses/current/decoder
 docker compose up -d --build
 docker compose ps
+docker compose logs ingestion
 ```
 
-Wait until all services are healthy. Open Superset at `http://127.0.0.1:8088` and use the administrator password configured above.
+Supported overrides include `REDIS_PASSWORD`, `CLICKHOUSE_PASSWORD`, `SUPERSET_SECRET_KEY`, `SUPERSET_ADMIN_PASSWORD`, `CLICKHOUSE_SQLALCHEMY_URI`, `SENSORFLOW_PORT`, `CLICKHOUSE_HTTP_PORT`, `CLICKHOUSE_NATIVE_PORT`, `REDIS_PORT`, and `SUPERSET_PORT`.
 
-The startup process initializes Superset, creates the administrator, configures ClickHouse, and provisions the `sensors.event` dataset and event overview dashboard.
+All published ports bind to `127.0.0.1` by default. Replace every default credential before shared or production deployment, configure TLS and backups, and keep decoder/license files outside Git.
 
-Before production deployment, override `SUPERSET_SECRET_KEY`, `SUPERSET_ADMIN_PASSWORD`, and database credentials with environment variables. Restrict database ports and enable backups.
-
-Stop without deleting data:
+Stop without deleting named volumes:
 
 ```bash
 docker compose down
