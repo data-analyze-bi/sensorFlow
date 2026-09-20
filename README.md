@@ -31,7 +31,7 @@ cd sensorFlow
 ./install.sh
 ```
 
-This stage does not require a license. The installer detects Redis and ClickHouse, starts missing services, imports clearly labeled `demo_*` events, creates the Superset dataset and dashboard, and prints the Superset login. It does not start the real SDK ingestion service.
+This stage does not require a license. The installer detects Redis and ClickHouse, starts missing services, imports clearly labeled `demo_*` events, creates the Superset dataset and dashboard, and prints the Superset login. The demo dashboard includes events, users, DAU, new users, purchasers, demo GMV, conversion, hourly/daily trends, funnel stages, channels, pages, countries, operating systems, networks, and app versions. It does not start the real SDK ingestion service.
 
 ## Stage 2: activate real event ingestion
 

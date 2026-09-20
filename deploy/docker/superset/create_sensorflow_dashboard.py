@@ -4,7 +4,7 @@ from uuid import uuid4
 
 from superset.app import create_app
 
-DASH_TITLE = "埋点数据总览"
+DASH_TITLE = "SensorFlow 产品与运营演示看板"
 DATASET_KEY = {"table_name": "event", "schema": "sensors"}
 
 
@@ -37,7 +37,19 @@ def base_params(viz_type):
         "datasource": "1__table",
         "viz_type": viz_type,
         "time_range": "No filter",
-        "adhoc_filters": [],
+        "adhoc_filters": [
+            {
+                "clause": "WHERE",
+                "comparator": "sensorflow-demo",
+                "datasourceWarning": False,
+                "expressionType": "SIMPLE",
+                "filterOptionName": "filter_demo_app",
+                "fromFormData": True,
+                "operator": "==",
+                "sqlExpression": None,
+                "subject": "app_id",
+            }
+        ],
         "row_limit": 10000,
     }
 
@@ -46,21 +58,36 @@ def chart_specs():
     specs = []
 
     p = base_params("big_number_total")
-    p.update({"metric": metric_count("总事件数"), "subheader": "全部埋点事件", "y_axis_format": "SMART_NUMBER"})
+    p.update({"metric": metric_count("总事件数"), "subheader": "Demo events", "y_axis_format": "SMART_NUMBER"})
     specs.append(("总事件数", "big_number_total", p))
 
     p = base_params("big_number_total")
-    p.update({"metric": metric_sql("独立设备数", "uniqExact(distinct_id)"), "subheader": "distinct_id 去重", "y_axis_format": "SMART_NUMBER"})
-    specs.append(("独立设备数", "big_number_total", p))
+    p.update({"metric": metric_sql("用户数", "uniqExact(distinct_id)"), "subheader": "Demo users", "y_axis_format": "SMART_NUMBER"})
+    specs.append(("用户数", "big_number_total", p))
 
     p = base_params("big_number_total")
-    p.update({"metric": metric_sql("事件类型数", "uniqExact(event)"), "subheader": "event 去重", "y_axis_format": "SMART_NUMBER"})
-    specs.append(("事件类型数", "big_number_total", p))
+    p.update({"metric": metric_sql("今日活跃用户", "uniqExactIf(distinct_id, toDate(time) = today())"), "subheader": "DAU", "y_axis_format": "SMART_NUMBER"})
+    specs.append(("今日活跃用户", "big_number_total", p))
+
+    p = base_params("big_number_total")
+    p.update({"metric": metric_sql("新用户", "uniqExactIf(distinct_id, is_first_day = 1)"), "subheader": "First-day users", "y_axis_format": "SMART_NUMBER"})
+    specs.append(("新用户", "big_number_total", p))
+
+    p = base_params("big_number_total")
+    p.update({"metric": metric_sql("购买人数", "uniqExactIf(distinct_id, event = 'demo_purchase')"), "subheader": "Purchasers", "y_axis_format": "SMART_NUMBER"})
+    specs.append(("购买人数", "big_number_total", p))
+
+    p = base_params("big_number_total")
+    p.update({"metric": metric_sql("Demo GMV", "sum(revenue)"), "subheader": "Demo revenue", "y_axis_format": ",.2f"})
+    specs.append(("Demo GMV", "big_number_total", p))
+
+    p = base_params("big_number_total")
+    p.update({"metric": metric_sql("付费转化率", "uniqExactIf(distinct_id, event = 'demo_purchase') / greatest(uniqExact(distinct_id), 1)"), "subheader": "Purchasers / users", "y_axis_format": ".1%"})
+    specs.append(("付费转化率", "big_number_total", p))
 
     p = base_params("echarts_timeseries_bar")
     p.update({
-        "x_axis": "time",
-        "time_grain_sqla": "PT1M",
+        "x_axis": "demo_hour",
         "metrics": [metric_count("事件数")],
         "groupby": [],
         "order_desc": True,
@@ -70,7 +97,11 @@ def chart_specs():
         "rich_tooltip": True,
         "show_value": False,
     })
-    specs.append(("每分钟事件趋势", "echarts_timeseries_bar", p))
+    specs.append(("小时事件趋势", "echarts_timeseries_bar", p))
+
+    p = base_params("echarts_timeseries_line")
+    p.update({"x_axis": "demo_day", "metrics": [metric_sql("活跃用户", "uniqExact(distinct_id)")], "groupby": [], "show_legend": False, "rich_tooltip": True, "y_axis_format": "SMART_NUMBER"})
+    specs.append(("日活跃用户趋势", "echarts_timeseries_line", p))
 
     p = base_params("table")
     p.update({
@@ -84,6 +115,10 @@ def chart_specs():
     })
     specs.append(("Top 事件排行", "table", p))
 
+    p = base_params("table")
+    p.update({"query_mode": "aggregate", "groupby": ["event"], "metrics": [metric_sql("用户数", "uniqExact(distinct_id)")], "adhoc_filters": base_params("table")["adhoc_filters"] + [{"clause": "WHERE", "comparator": ["demo_app_open", "demo_product_view", "demo_add_to_cart", "demo_purchase"], "datasourceWarning": False, "expressionType": "SIMPLE", "filterOptionName": "filter_funnel", "fromFormData": True, "operator": "IN", "sqlExpression": None, "subject": "event"}], "row_limit": 10, "server_page_length": 10, "show_cell_bars": True})
+    specs.append(("核心行为漏斗阶段", "table", p))
+
     p = base_params("pie")
     p.update({
         "groupby": ["os"],
@@ -95,6 +130,11 @@ def chart_specs():
         "number_format": "SMART_NUMBER",
     })
     specs.append(("操作系统分布", "pie", p))
+
+    for column, title in [("channel", "获客渠道分布"), ("country", "国家地区分布"), ("page_name", "页面访问分布")]:
+        p = base_params("pie")
+        p.update({"groupby": [column], "metric": metric_count("事件数"), "row_limit": 10, "show_labels": True, "show_legend": True, "label_type": "key_percent", "number_format": "SMART_NUMBER"})
+        specs.append((title, "pie", p))
 
     p = base_params("table")
     p.update({
@@ -126,27 +166,24 @@ def chart_specs():
 def make_position_json(chart_ids):
     root_id = "ROOT_ID"
     grid_id = "GRID_ID"
-    row1, row2, row3 = "ROW-1", "ROW-2", "ROW-3"
+    row_ids = [f"ROW-{index}" for index in range(1, 8)]
     position = {
         "DASHBOARD_VERSION_KEY": "v2",
         root_id: {"type": "ROOT", "id": root_id, "children": [grid_id]},
-        grid_id: {"type": "GRID", "id": grid_id, "children": [row1, row2, row3]},
-        row1: {"type": "ROW", "id": row1, "children": [], "meta": {"background": "BACKGROUND_TRANSPARENT"}},
-        row2: {"type": "ROW", "id": row2, "children": [], "meta": {"background": "BACKGROUND_TRANSPARENT"}},
-        row3: {"type": "ROW", "id": row3, "children": [], "meta": {"background": "BACKGROUND_TRANSPARENT"}},
+        grid_id: {"type": "GRID", "id": grid_id, "children": row_ids},
     }
-    widths = [4, 4, 4, 12, 6, 6, 6, 6]
-    heights = [16, 16, 16, 50, 50, 50, 45, 45]
-    rows = [row1, row1, row1, row2, row2, row2, row3, row3]
+    for row_id in row_ids:
+        position[row_id] = {"type": "ROW", "id": row_id, "children": [], "meta": {"background": "BACKGROUND_TRANSPARENT"}}
     for idx, cid in enumerate(chart_ids):
         chart_node = f"CHART-{cid}"
         position[chart_node] = {
             "type": "CHART",
             "id": chart_node,
             "children": [],
-            "meta": {"chartId": cid, "height": heights[idx], "width": widths[idx]},
+            "meta": {"chartId": cid, "height": 18 if idx < 7 else 45, "width": 3 if idx < 4 else (4 if idx < 7 else 6)},
         }
-        position[rows[idx]]["children"].append(chart_node)
+        row_index = 0 if idx < 4 else (1 if idx < 7 else min(2 + (idx - 7) // 2, len(row_ids) - 1))
+        position[row_ids[row_index]]["children"].append(chart_node)
     return json.dumps(position)
 
 
@@ -161,11 +198,12 @@ def main():
         dataset = db.session.query(SqlaTable).filter_by(**DATASET_KEY).one()
         datasource = f"{dataset.id}__{dataset.type}"
 
-        dash = db.session.query(Dashboard).filter_by(dashboard_title=DASH_TITLE).one_or_none()
+        dash = db.session.query(Dashboard).filter_by(slug="sensorflow-events-overview").one_or_none()
         if dash is None:
             dash = Dashboard(dashboard_title=DASH_TITLE, slug="sensorflow-events-overview", published=True)
             db.session.add(dash)
         else:
+            dash.dashboard_title = DASH_TITLE
             dash.slices = []
             for slc in db.session.query(Slice).filter(Slice.slice_name.like("埋点-%")).all():
                 db.session.delete(slc)
@@ -183,7 +221,7 @@ def main():
                 params=json.dumps(params, ensure_ascii=False),
                 query_context=None,
                 uuid=uuid4(),
-                description="自动生成：SensorFlow 埋点 ClickHouse 查询图表",
+                description="自动生成：仅展示 app_id=sensorflow-demo 的演示数据，不代表真实业务指标",
                 created_on=datetime.utcnow(),
                 changed_on=datetime.utcnow(),
             )

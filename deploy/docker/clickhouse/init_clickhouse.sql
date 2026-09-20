@@ -34,6 +34,12 @@ CREATE TABLE IF NOT EXISTS sensors.event (
     `timezone_offset` Int16 DEFAULT 0,
     `device_id` String DEFAULT '',
     `user_id` String DEFAULT '',
+    `channel` LowCardinality(String) DEFAULT '',
+    `country` LowCardinality(String) DEFAULT '',
+    `page_name` String DEFAULT '',
+    `demo_hour` String DEFAULT '',
+    `demo_day` String DEFAULT '',
+    `revenue` Float64 DEFAULT 0,
 
     INDEX idx_event (`event`) TYPE bloom_filter GRANULARITY 1,
     INDEX idx_distinct_id (`distinct_id`) TYPE bloom_filter GRANULARITY 1,
