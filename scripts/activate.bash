@@ -11,6 +11,25 @@ prompt() {
   printf '%s' "$value"
 }
 
+dotenv_get() {
+  local key="$1" value
+  value="$(sed -n "s/^${key}=//p" "$ENV_FILE" | tail -n 1)"
+  value="${value#\'}"
+  value="${value%\'}"
+  printf '%s' "$value"
+}
+
+dotenv_set() {
+  local key="$1" value="$2" escaped
+  escaped="${value//\'/\'\\\'\'}"
+  if grep -q "^${key}=" "$ENV_FILE"; then
+    sed -i.bak "s|^${key}=.*$|${key}='${escaped}'|" "$ENV_FILE"
+    rm -f "$ENV_FILE.bak"
+  else
+    printf "%s='%s'\n" "$key" "$escaped" >>"$ENV_FILE"
+  fi
+}
+
 install_license() {
   local license_target="$ROOT_DIR/binaries/sensors-payload-license"
   local verify_target="$ROOT_DIR/binaries/sensors-payload-license.verify.json"
@@ -95,13 +114,41 @@ docker compose version >/dev/null || { echo "请先安装 Docker Compose v2。" 
 
 install_license
 
+ingestion_token="$(dotenv_get SENSORFLOW_INGESTION_TOKEN)"
+if [[ -z "$ingestion_token" ]]; then
+  ingestion_token="$(openssl rand -hex 24)"
+  dotenv_set SENSORFLOW_INGESTION_TOKEN "$ingestion_token"
+fi
+
+domain="$(dotenv_get SENSORFLOW_DOMAIN)"
+if [[ -z "$domain" && -t 0 ]]; then
+  domain="$(prompt '请输入已解析到本机公网 IP 的埋点域名（没有则直接回车，仅启用本机地址）')"
+  domain="${domain#http://}"
+  domain="${domain#https://}"
+  domain="${domain%%/*}"
+  [[ -z "$domain" ]] || dotenv_set SENSORFLOW_DOMAIN "$domain"
+fi
+
 cd "$COMPOSE_DIR"
 docker compose --profile ingestion up -d --build ingestion
+if [[ -n "$domain" ]]; then
+  docker compose --profile ingestion --profile edge up -d caddy
+fi
 docker compose ps ingestion
+
+if [[ -n "$domain" ]]; then
+  server_url="https://${domain}/sensors/send/?token=${ingestion_token}"
+else
+  server_url="http://127.0.0.1:${SENSORFLOW_PORT:-8081}/sensors/send/?token=${ingestion_token}"
+fi
 
 cat <<EOF
 
 SensorFlow 真实埋点接收服务已启动。
 Ingestion: http://127.0.0.1:8081
-请将神策 SDK serverUrl 指向：https://你的域名/sensors/send/?token=YOUR_TOKEN
+埋点 Token: $ingestion_token
+神策 SDK serverUrl: $server_url
+
+Token 是安装器自动生成的接收密钥，已保存到 deploy/docker/.env，请勿提交到 Git。
+$(if [[ -n "$domain" ]]; then printf '%s' "Caddy 已启动，将自动申请 HTTPS 证书。请确保 DNS A/AAAA 记录已指向本服务器，且 80/443 端口可访问。"; else printf '%s' "当前仅可本机访问。如需公网埋点，先将域名 DNS 指向服务器，再重新运行 ./activate.sh 并输入域名。"; fi)
 EOF

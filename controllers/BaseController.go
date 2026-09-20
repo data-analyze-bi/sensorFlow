@@ -1,10 +1,12 @@
 package controllers
 
 import (
+	"crypto/subtle"
 	"encoding/json"
 	"fmt"
 	beego "github.com/beego/beego/v2/server/web"
 	"github.com/tal-tech/go-zero/core/logx"
+	"os"
 	"sensors/common"
 	"sensors/initialize"
 	"strconv"
@@ -23,6 +25,17 @@ func (c *BaseController) URLMapping() {
 // @Success 200 {object} controllers.Result
 // @router / [post]
 func (c *BaseController) Post() {
+	expectedToken := strings.TrimSpace(os.Getenv("SENSORFLOW_INGESTION_TOKEN"))
+	providedToken := strings.TrimSpace(c.GetString("token"))
+	if expectedToken == "" {
+		c.Fail("ingestion token is not configured", 503)
+		return
+	}
+	if len(providedToken) != len(expectedToken) || subtle.ConstantTimeCompare([]byte(providedToken), []byte(expectedToken)) != 1 {
+		c.Fail("invalid ingestion token", 401)
+		return
+	}
+
 	data := c.GetString("data_list")
 	if data == "" {
 		data = c.GetString("data")

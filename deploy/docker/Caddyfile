@@ -1,0 +1,4 @@
+{$SENSORFLOW_DOMAIN} {
+	encode zstd gzip
+	reverse_proxy ingestion:8081
+}

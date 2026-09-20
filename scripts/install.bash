@@ -112,6 +112,7 @@ fi
 
 superset_secret="$(random_secret 32)"
 superset_password="$(random_secret 16)"
+ingestion_token="$(random_secret 24)"
 
 if $use_external_redis; then
   redis_host="$(prompt 'Redis 地址（容器可访问地址）' 'host.docker.internal:6379')"
@@ -161,6 +162,7 @@ CLICKHOUSE_SQLALCHEMY_URI=$(dotenv_quote "$clickhouse_uri")
 SUPERSET_SECRET_KEY=$(dotenv_quote "$superset_secret")
 SUPERSET_ADMIN_USERNAME=admin
 SUPERSET_ADMIN_PASSWORD=$(dotenv_quote "$superset_password")
+SENSORFLOW_INGESTION_TOKEN=$(dotenv_quote "$ingestion_token")
 EOF
 
 cd "$COMPOSE_DIR"
