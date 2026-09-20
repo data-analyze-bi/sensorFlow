@@ -14,10 +14,10 @@ prompt() {
 install_license() {
   local license_target="$ROOT_DIR/binaries/sensors-payload-license"
   local verify_target="$ROOT_DIR/binaries/sensors-payload-license.verify.json"
-  local license_path="" verify_path="" candidate
+  local license_path="" verify_path="" candidate archive_dir=""
   local candidates=()
 
-  if [[ -x "$license_target" ]]; then
+  if [[ -x "$license_target" && -f "$verify_target" ]]; then
     echo "检测到已安装许可证。"
     return 0
   fi
@@ -46,23 +46,47 @@ install_license() {
   done
 
   mkdir -p "$ROOT_DIR/binaries"
-  cp "$license_path" "$license_target"
+
+  if [[ "$license_path" == *.zip ]]; then
+    command -v unzip >/dev/null || { echo "请先安装 unzip，或手动解压许可证压缩包。" >&2; exit 1; }
+    archive_dir="$(mktemp -d)"
+    trap '[[ -z "${archive_dir:-}" ]] || rm -rf "$archive_dir"' RETURN
+    unzip -q "$license_path" -d "$archive_dir"
+    license_path="$archive_dir/binaries/sensors-payload-license"
+    verify_path="$archive_dir/binaries/sensors-payload-license.verify.json"
+    [[ -f "$license_path" ]] || { echo "许可证压缩包缺少 binaries/sensors-payload-license。" >&2; exit 1; }
+    [[ -f "$verify_path" ]] || { echo "许可证压缩包缺少 binaries/sensors-payload-license.verify.json。" >&2; exit 1; }
+  fi
+
+  if [[ ! "$license_path" -ef "$license_target" ]]; then
+    cp "$license_path" "$license_target"
+  fi
   chmod 700 "$license_target"
 
-  local license_source_dir
-  license_source_dir="$(cd "$(dirname "$license_path")" && pwd)"
-  while IFS= read -r candidate; do
-    verify_path="$candidate"
-    break
-  done < <(find "$license_source_dir" -maxdepth 1 -type f -name '*.verify.json' 2>/dev/null | sort)
+  if [[ -z "$verify_path" ]]; then
+    local license_source_dir
+    license_source_dir="$(cd "$(dirname "$license_path")" && pwd)"
+    while IFS= read -r candidate; do
+      verify_path="$candidate"
+      break
+    done < <(find "$license_source_dir" -maxdepth 1 -type f -name '*.verify.json' 2>/dev/null | sort)
+  fi
 
   if [[ -z "$verify_path" ]]; then
     verify_path="$(prompt '请输入运营网站下载的 verify.json 路径')"
     verify_path="${verify_path/#\~/$HOME}"
   fi
   [[ -f "$verify_path" ]] || { echo "验证文件不存在：$verify_path" >&2; exit 1; }
-  cp "$verify_path" "$verify_target"
+  if [[ ! "$verify_path" -ef "$verify_target" ]]; then
+    cp "$verify_path" "$verify_target"
+  fi
   chmod 600 "$verify_target"
+
+  if [[ -n "$archive_dir" ]]; then
+    rm -rf "$archive_dir"
+    archive_dir=""
+    trap - RETURN
+  fi
 }
 
 command -v docker >/dev/null || { echo "请先安装 Docker。" >&2; exit 1; }
