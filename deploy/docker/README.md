@@ -4,16 +4,14 @@ This stack is for licensed SensorFlow customers and starts Go ingestion, Redis, 
 
 Before startup, install the supplied executable decoder at `../../binaries/licenses/current/decoder` and its verification/license file in the same version directory. The licenses directory is mounted read-only.
 
+Run `../../install.sh` from the repository root. It detects existing Redis and ClickHouse services, prompts only when an existing service may be reused, generates missing credentials, writes the private `.env`, and starts the required Compose services.
+
 ```bash
-test -x ../../binaries/licenses/current/decoder
-cp .env.example .env
-# Set your own SUPERSET_SECRET_KEY and SUPERSET_ADMIN_PASSWORD in .env.
-docker compose up -d --build
-docker compose ps
-docker compose logs ingestion
+cd ../..
+./install.sh
 ```
 
-The stack does not define customer passwords. Empty `REDIS_PASSWORD` and `CLICKHOUSE_PASSWORD` values start the bundled local databases without authentication; non-empty values enable authentication and are passed to ingestion. When ClickHouse authentication is enabled, also set `CLICKHOUSE_SQLALCHEMY_URI` with the same URL-encoded credentials for Superset.
+For a new machine, the installer generates Redis, ClickHouse, and Superset credentials. Existing Redis or ClickHouse credentials are collected interactively and passed consistently to ingestion and Superset.
 
 Supported overrides include `REDIS_HOST`, `REDIS_TYPE`, `REDIS_PASSWORD`, `CLICKHOUSE_HOST`, `CLICKHOUSE_USER`, `CLICKHOUSE_PASSWORD`, `CLICKHOUSE_DB`, `SUPERSET_SECRET_KEY`, `SUPERSET_ADMIN_PASSWORD`, `CLICKHOUSE_SQLALCHEMY_URI`, and the published port variables.
 

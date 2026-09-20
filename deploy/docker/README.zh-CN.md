@@ -4,16 +4,14 @@
 
 启动前请把交付的可执行 decoder 安装到 `../../binaries/licenses/current/decoder`，并把验证/许可证文件放在同一版本目录。许可证目录以只读方式挂载。
 
+在仓库根目录运行 `./install.sh`。安装器会检测已有 Redis 与 ClickHouse，仅在可能复用已有服务时询问连接信息，自动生成缺失凭证、写入私有 `.env` 并启动所需 Compose 服务。
+
 ```bash
-test -x ../../binaries/licenses/current/decoder
-cp .env.example .env
-# 在 .env 中设置自己的 SUPERSET_SECRET_KEY 和 SUPERSET_ADMIN_PASSWORD。
-docker compose up -d --build
-docker compose ps
-docker compose logs ingestion
+cd ../..
+./install.sh
 ```
 
-项目不定义客户密码。`REDIS_PASSWORD` 和 `CLICKHOUSE_PASSWORD` 为空时，内置本地数据库以无认证模式启动；设置非空值后会启用认证，并把相同值传给接收服务。启用 ClickHouse 密码时，还需设置包含相同 URL 编码凭证的 `CLICKHOUSE_SQLALCHEMY_URI` 供 Superset 使用。
+全新机器由安装器生成 Redis、ClickHouse 和 Superset 凭证；复用已有 Redis 或 ClickHouse 时，在安装过程中收集凭证，并统一传递给接收服务和 Superset。
 
 可覆盖变量包括 `REDIS_HOST`、`REDIS_TYPE`、`REDIS_PASSWORD`、`CLICKHOUSE_HOST`、`CLICKHOUSE_USER`、`CLICKHOUSE_PASSWORD`、`CLICKHOUSE_DB`、`SUPERSET_SECRET_KEY`、`SUPERSET_ADMIN_PASSWORD`、`CLICKHOUSE_SQLALCHEMY_URI` 以及公开端口变量。
 

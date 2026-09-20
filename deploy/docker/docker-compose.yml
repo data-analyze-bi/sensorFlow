@@ -1,5 +1,6 @@
 services:
   redis:
+    profiles: ["redis-bundled"]
     image: redis:7-alpine
     restart: unless-stopped
     environment:
@@ -25,6 +26,7 @@ services:
       - sensorflow
 
   clickhouse:
+    profiles: ["clickhouse-bundled"]
     image: clickhouse/clickhouse-server:23.8
     restart: unless-stopped
     environment:
@@ -64,11 +66,8 @@ services:
       - "127.0.0.1:${SENSORFLOW_PORT:-8081}:8081"
     volumes:
       - ../../binaries/licenses:/app/binaries/licenses:ro
-    depends_on:
-      redis:
-        condition: service_healthy
-      clickhouse:
-        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - sensorflow
 
@@ -90,9 +89,8 @@ services:
     volumes:
       - superset_home:/app/superset_home
       - ./superset:/app/pythonpath:ro
-    depends_on:
-      clickhouse:
-        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     command: ["/app/pythonpath/start-superset.sh"]
     networks:
       - sensorflow

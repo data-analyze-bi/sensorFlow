@@ -41,15 +41,13 @@ ln -sfn customer binaries/licenses/current
 test -x binaries/licenses/current/decoder
 ```
 
-启动完整环境：
+运行一键安装：
 
 ```bash
-cd deploy/docker
-cp .env.example .env
-# 编辑 .env，设置自己的 SUPERSET_SECRET_KEY 和 SUPERSET_ADMIN_PASSWORD。
-docker compose up -d --build
-docker compose ps
+./install.sh
 ```
+
+安装器会检测本机标准端口上的 Redis 和 ClickHouse。均未安装时，自动生成强随机凭证并启动隔离的内置容器；检测到已有服务时，会询问是否复用，并在安装过程中要求填写连接信息。最终私有配置自动写入权限为 `600` 的 `deploy/docker/.env`，用户无需手工创建或编辑。
 
 Compose 会启动 Go 接收服务、Redis、ClickHouse 和 Apache Superset。默认端口只绑定 `127.0.0.1`：
 
@@ -75,7 +73,7 @@ docker compose exec -T clickhouse clickhouse-client \
   --query "SELECT time, event, distinct_id FROM sensors.event WHERE event = 'integration_test' ORDER BY time DESC LIMIT 10"
 ```
 
-Superset 地址为 `http://127.0.0.1:8088`。启动前由用户设置 `SUPERSET_ADMIN_PASSWORD`，项目不定义用户密码。
+Superset 地址为 `http://127.0.0.1:8088`，安装完成后会显示自动生成的管理员初始密码。
 
 ## 生产要求
 

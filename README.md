@@ -41,15 +41,13 @@ Do not commit decoder or license files. Compose mounts `binaries/licenses` read-
 test -x binaries/licenses/current/decoder
 ```
 
-Start the stack:
+Run the installer:
 
 ```bash
-cd deploy/docker
-cp .env.example .env
-# Edit .env and set your own SUPERSET_SECRET_KEY and SUPERSET_ADMIN_PASSWORD.
-docker compose up -d --build
-docker compose ps
+./install.sh
 ```
+
+The installer detects Redis and ClickHouse on standard local ports. If neither exists, it generates strong random credentials and starts isolated bundled containers. If an existing service is detected, it asks whether to reuse it and prompts for its connection details. It writes the resulting private configuration to `deploy/docker/.env` with mode `600`; users do not create or edit that file manually.
 
 This starts Go ingestion, Redis, ClickHouse, and Apache Superset. Published ports bind to `127.0.0.1` by default:
 
@@ -75,7 +73,7 @@ docker compose exec -T clickhouse clickhouse-client \
   --query "SELECT time, event, distinct_id FROM sensors.event WHERE event = 'integration_test' ORDER BY time DESC LIMIT 10"
 ```
 
-Open Superset at `http://127.0.0.1:8088`. Set `SUPERSET_ADMIN_PASSWORD` before startup; the stack does not define a customer password.
+Open Superset at `http://127.0.0.1:8088`. The installer prints the generated administrator password once startup completes.
 
 ## Production requirements
 
