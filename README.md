@@ -35,13 +35,13 @@ This stage does not require a license. The installer detects Redis and ClickHous
 
 ## Stage 2: activate real event ingestion
 
-Get the decoder/license from [sensorflow.site](https://sensorflow.site/), leave the downloaded files in `~/Downloads`, then run:
+Download the SensorFlow license from [sensorflow.site](https://sensorflow.site/), leave the downloaded license files in `~/Downloads`, then run:
 
 ```bash
 ./activate.sh
 ```
 
-Activation automatically installs the decoder and verification file, then starts ingestion last. Existing Redis, ClickHouse, Superset, demo data, and private configuration are preserved.
+Activation automatically installs the license at `binaries/sensors-payload-decoder` and its verification file at `binaries/sensors-payload-decoder.verify.json`, then starts ingestion last. Existing Redis, ClickHouse, Superset, demo data, and private configuration are preserved.
 
 This starts Go ingestion, Redis, ClickHouse, and Apache Superset. Published ports bind to `127.0.0.1` by default:
 
@@ -75,7 +75,7 @@ The stack does not define Redis, ClickHouse, MySQL, or customer account password
 
 - Set `REDIS_PASSWORD`, `CLICKHOUSE_PASSWORD`, `SUPERSET_ADMIN_PASSWORD`, `SUPERSET_SECRET_KEY`, and a matching URL-encoded `CLICKHOUSE_SQLALCHEMY_URI`.
 - Terminate TLS in a reverse proxy and expose only the required ingestion path.
-- Keep database ports private, configure backups, and monitor decoder failures, ingestion latency, and ClickHouse disk usage.
+- Keep database ports private, configure backups, and monitor license processing failures, ingestion latency, and ClickHouse disk usage.
 - Pin and review container image versions according to your release policy.
 - Validate SDK version, encrypted payload plugins, identity behavior, property types, and event timestamps before moving traffic.
 
@@ -89,4 +89,4 @@ go build -o sensors main.go
 docker compose -f deploy/docker/docker-compose.yml config
 ```
 
-Contributions are described in [CONTRIBUTING.md](CONTRIBUTING.md). Never commit customer data, credentials, decoder binaries, or license files.
+Contributions are described in [CONTRIBUTING.md](CONTRIBUTING.md). Never commit customer data, credentials, or license files.

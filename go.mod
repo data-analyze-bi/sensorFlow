@@ -32,7 +32,7 @@ require (
 
 require (
 	github.com/ClickHouse/clickhouse-go v1.4.3
-	github.com/data-analyze-bi/decoder-bin-sdk v1.0.0
+	github.com/data-analyze-bi/license-bin-sdk v1.0.0
 	github.com/go-co-op/gocron v1.9.0
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/go-sql-driver/mysql v1.5.0
@@ -43,4 +43,4 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 )
 
-replace github.com/data-analyze-bi/decoder-bin-sdk => ./decoder-bin-sdk
+replace github.com/data-analyze-bi/license-bin-sdk => ./license-bin-sdk

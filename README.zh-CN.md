@@ -33,13 +33,13 @@ cd sensorFlow
 
 ## 第二阶段：激活真实埋点接收
 
-确认演示效果后，到 [sensorflow.site](https://sensorflow.site/) 下载 decoder/license，保留在 `~/Downloads` 并执行：
+确认演示效果后，到 [sensorflow.site](https://sensorflow.site/) 下载 SensorFlow 许可证，保留在 `~/Downloads` 并执行：
 
 ```bash
 ./activate.sh
 ```
 
-激活程序会自动安装 decoder 与验证文件，最后才启动 ingestion。已有 Redis、ClickHouse、Superset、演示数据和私有配置均不会被覆盖。
+激活程序会把许可证自动安装为 `binaries/sensors-payload-decoder`，配套验证文件安装为 `binaries/sensors-payload-decoder.verify.json`，最后才启动 ingestion。已有 Redis、ClickHouse、Superset、演示数据和私有配置均不会被覆盖。
 
 Compose 会启动 Go 接收服务、Redis、ClickHouse 和 Apache Superset。默认端口只绑定 `127.0.0.1`：
 
@@ -73,7 +73,7 @@ Superset 地址为 `http://127.0.0.1:8088`，安装完成后会显示自动生�
 
 - 设置 `REDIS_PASSWORD`、`CLICKHOUSE_PASSWORD`、`SUPERSET_ADMIN_PASSWORD`、`SUPERSET_SECRET_KEY`，以及密码经过 URL 编码且保持一致的 `CLICKHOUSE_SQLALCHEMY_URI`。
 - 通过反向代理提供 TLS，仅暴露必要的接收路径。
-- 保持数据库端口不公开，配置备份，并监控 decoder 失败、接收延迟和 ClickHouse 磁盘水位。
+- 保持数据库端口不公开，配置备份，并监控许可证处理失败、接收延迟和 ClickHouse 磁盘水位。
 - 根据发布策略固定并审核容器镜像版本。
 - 切换生产流量前验证 SDK 版本、加密插件、用户关联、属性类型和事件时间。
 
@@ -87,4 +87,4 @@ go build -o sensors main.go
 docker compose -f deploy/docker/docker-compose.yml config
 ```
 
-贡献说明见 [CONTRIBUTING.md](CONTRIBUTING.md)。不要提交客户数据、密码、decoder 二进制或许可证文件。
+贡献说明见 [CONTRIBUTING.md](CONTRIBUTING.md)。不要提交客户数据、密码或许可证文件。

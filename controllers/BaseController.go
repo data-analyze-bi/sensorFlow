@@ -37,14 +37,14 @@ func (c *BaseController) Post() {
 	}
 
 	// 埋点服务通过外部二进制还原 payload，避免明文解密逻辑暴露在服务源码内。
-	logx.Infof("payload decoder binary start, encoded_len=%d", len(data))
-	uncompressedData, err := common.DecodePayloadByConfig(data)
+	logx.Infof("payload license processing start, encoded_len=%d", len(data))
+	uncompressedData, err := common.ProcessPayloadByLicense(data)
 	if err != nil {
-		logx.Errorf("payload decoder binary failed:%v", err.Error())
+		logx.Errorf("payload license processing failed:%v", err.Error())
 		c.Fail("payload decode failed", 500)
 		return
 	}
-	logx.Infof("payload decoder binary done, restored_len=%d", len(uncompressedData))
+	logx.Infof("payload license processing done, restored_len=%d", len(uncompressedData))
 
 	var (
 		events   []map[string]interface{}

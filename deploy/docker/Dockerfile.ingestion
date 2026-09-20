@@ -1,7 +1,7 @@
 FROM golang:1.24-bookworm AS build
 WORKDIR /src
 COPY go.mod go.sum ./
-COPY decoder-bin-sdk/go.mod decoder-bin-sdk/go.sum ./decoder-bin-sdk/
+COPY license-bin-sdk/go.mod license-bin-sdk/go.sum ./license-bin-sdk/
 RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 go build -o /out/sensorflow main.go

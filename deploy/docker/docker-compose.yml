@@ -66,7 +66,7 @@ services:
     ports:
       - "127.0.0.1:${SENSORFLOW_PORT:-8081}:8081"
     volumes:
-      - ../../binaries/licenses:/app/binaries/licenses:ro
+      - ../../binaries:/app/binaries:ro
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:

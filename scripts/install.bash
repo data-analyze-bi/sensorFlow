@@ -204,5 +204,5 @@ Superset 初始密码: $superset_password
 
 下一步：先查看 Superset 演示数据和图表。
 需要接入真实神策 SDK 数据时，请到 https://sensorflow.site/ 获取许可证，
-下载 decoder/license 后运行：./activate.sh
+下载许可证后运行：./activate.sh
 EOF
