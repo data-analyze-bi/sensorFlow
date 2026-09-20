@@ -78,7 +78,7 @@ services:
     image: caddy:2-alpine
     restart: unless-stopped
     environment:
-      SENSORFLOW_DOMAIN: ${SENSORFLOW_DOMAIN:?Set SENSORFLOW_DOMAIN in deploy/docker/.env}
+      SENSORFLOW_DOMAIN: ${SENSORFLOW_DOMAIN:-localhost}
     ports:
       - "80:80"
       - "443:443"
