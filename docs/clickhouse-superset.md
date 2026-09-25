@@ -14,4 +14,4 @@ ORDER BY event_count DESC
 LIMIT 20;
 ```
 
-Open Superset at `http://127.0.0.1:8088` after starting Docker Compose. Use the configured ClickHouse connection in SQL Lab, then save useful queries as charts or dashboards.
+Run `./install.sh`, then open the server-IP URL printed by the installer. Use the configured ClickHouse connection in SQL Lab, then save useful queries as charts or dashboards.

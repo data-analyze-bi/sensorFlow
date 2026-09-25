@@ -14,4 +14,4 @@ ORDER BY event_count DESC
 LIMIT 20;
 ```
 
-启动 Docker Compose 后访问 `http://127.0.0.1:8088`，在 Superset SQL Lab 中选择 ClickHouse 数据库，即可查询埋点数据并保存为图表或看板。
+运行 `./install.sh` 后访问安装器输出的 `http://服务器IP:8088`，在 Superset SQL Lab 中选择 ClickHouse 数据库，即可查询埋点数据并保存为图表或看板。

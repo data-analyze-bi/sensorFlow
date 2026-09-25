@@ -31,6 +31,8 @@ cd sensorFlow
 
 第一阶段不需要许可证。安装器会检测 Redis 和 ClickHouse、启动缺失服务、导入明确标记为 `demo_*` 的演示事件，并创建 Superset 数据集与看板，最后显示登录信息。演示看板包含事件数、用户数、DAU、新用户、购买人数、Demo GMV、付费转化率、小时/日趋势、核心漏斗阶段，以及渠道、页面、国家地区、操作系统、网络和版本分布。此时不会启动真实 SDK 埋点接收服务。
 
+安装完成后，允许服务器/云防火墙 TCP 8088，打开安装器输出的服务器 IP 地址，使用终端红色显示的 Superset 账号密码查看演示图表；确认图表后再执行 `./activate.sh` 激活真实埋点。Caddy 仅在绑定域名和 HTTPS 时启用。
+
 ## 第二阶段：激活真实埋点接收
 
 确认演示效果后，到 [sensorflow.site](https://sensorflow.site/) 下载 SensorFlow 许可证，保留在 `~/Downloads` 并执行：
@@ -41,12 +43,14 @@ cd sensorFlow
 
 激活程序会把许可证自动安装为 `binaries/sensors-payload-license`，配套验证文件安装为 `binaries/sensors-payload-license.verify.json`，最后才启动 ingestion。已有 Redis、ClickHouse、Superset、演示数据和私有配置均不会被覆盖。
 
-Compose 会启动 Go 接收服务、Redis、ClickHouse 和 Apache Superset。默认端口只绑定 `127.0.0.1`：
+Superset 安装后可通过服务器 IP 访问，其他服务默认仅绑定本机地址；Go 接收服务需要激活：
 
 - 接收服务：`127.0.0.1:8081`
 - ClickHouse HTTP/native：`127.0.0.1:8123` / `127.0.0.1:9000`
 - Redis：`127.0.0.1:6379`
-- Superset：`127.0.0.1:8088`
+- Superset：`http://服务器IP:8088`（默认监听 `0.0.0.0`）
+
+安装器自动生成缺失凭证，重复执行保留原凭证，终端中的管理员账号密码以红色显示。[绑定域名和 HTTPS](deploy/docker/README.zh-CN.md#绑定域名)。
 
 ## 激活后接入神策 SDK
 
@@ -65,7 +69,7 @@ docker compose exec -T clickhouse clickhouse-client \
   --query "SELECT time, event, distinct_id FROM sensors.event WHERE event = 'integration_test' ORDER BY time DESC LIMIT 10"
 ```
 
-Superset 地址为 `http://127.0.0.1:8088`，安装完成后会显示自动生成的管理员初始密码。
+Superset 地址为 安装器输出的 `http://服务器IP:8088`，安装完成后会显示自动生成的管理员初始密码。
 
 ## 生产要求
 

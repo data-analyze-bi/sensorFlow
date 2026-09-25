@@ -1,30 +1,28 @@
 # Getting Started with SensorFlow
 
-SensorFlow is an open-source, self-hosted product analytics platform. This guide starts the ClickHouse, Redis, and Apache Superset data stack, then launches the Go event ingestion service.
+SensorFlow is an open-source, self-hosted product analytics platform. This guide installs the demo first, then activates real event ingestion.
 
 ## Prerequisites
 
-- Docker Engine or Docker Desktop with Docker Compose
-- Go 1.17 or newer
-- A SensorFlow license installed at `binaries/sensors-payload-license` as described in the main README
+- Docker Engine or Docker Desktop with Docker Compose v2
+- A server IP reachable from your browser (TCP 8088 must be allowed)
 
-## Start the stack
-
-```bash
-cd deploy/docker
-docker compose up -d --build
-docker compose ps
-```
-
-The default services are ClickHouse, Redis, and Apache Superset. Configure passwords and `SUPERSET_SECRET_KEY` before using this setup in production.
-
-## Start ingestion
-
-From the repository root:
+## Install and view the demo
 
 ```bash
-go mod download
-go run main.go
+git clone https://github.com/data-analyze-bi/sensorFlow.git
+cd sensorFlow
+./install.sh
 ```
 
-The ingestion service listens on port `8081` by default. See [Sensors Data SDK integration](sensors-sdk.md) to send events.
+The installer generates missing credentials, prints the Superset credentials in red, and outputs a server-IP URL. Allow TCP 8088 and open that URL to view the demo dashboard. Caddy is optional and is only needed for a domain name and HTTPS.
+
+## Activate real ingestion
+
+After verifying the demo, run this in the repository root:
+
+```bash
+./activate.sh
+```
+
+Configure your SDK with the URL printed by the activation command, then send an `integration_test` event. See [Sensors Data SDK integration](sensors-sdk.md).

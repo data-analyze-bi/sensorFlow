@@ -1,4 +1,12 @@
+{$SUPERSET_DOMAIN} {
+	encode zstd gzip
+	reverse_proxy superset:8088
+}
+
 {$SENSORFLOW_DOMAIN} {
 	encode zstd gzip
-	reverse_proxy ingestion:8081
+	handle /sensors/* {
+		reverse_proxy ingestion:8081
+	}
+	respond / 404
 }

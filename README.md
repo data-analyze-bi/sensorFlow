@@ -33,6 +33,8 @@ cd sensorFlow
 
 This stage does not require a license. The installer detects Redis and ClickHouse, starts missing services, imports clearly labeled `demo_*` events, creates the Superset dataset and dashboard, and prints the Superset login. The demo dashboard includes events, users, DAU, new users, purchasers, demo GMV, conversion, hourly/daily trends, funnel stages, channels, pages, countries, operating systems, networks, and app versions. It does not start the real SDK ingestion service.
 
+After installation, allow TCP 8088 in the server/cloud firewall, open the server IP URL printed by the installer, and use the red administrator credentials to view the demo. Once verified, run `./activate.sh` to start real ingestion. Caddy is an optional deployment component for domains and HTTPS.
+
 ## Stage 2: activate real event ingestion
 
 Download the SensorFlow license from [sensorflow.site](https://sensorflow.site/), leave the downloaded license files in `~/Downloads`, then run:
@@ -43,12 +45,14 @@ Download the SensorFlow license from [sensorflow.site](https://sensorflow.site/)
 
 Activation automatically installs the license at `binaries/sensors-payload-license` and its verification file at `binaries/sensors-payload-license.verify.json`, then starts ingestion last. Existing Redis, ClickHouse, Superset, demo data, and private configuration are preserved.
 
-This starts Go ingestion, Redis, ClickHouse, and Apache Superset. Published ports bind to `127.0.0.1` by default:
+Superset is reachable through the server IP; other ports bind to `127.0.0.1` by default. Go ingestion starts only after activation:
 
 - Ingestion: `127.0.0.1:8081`
 - ClickHouse HTTP/native: `127.0.0.1:8123` / `127.0.0.1:9000`
 - Redis: `127.0.0.1:6379`
-- Superset: `127.0.0.1:8088`
+- Superset: `http://YOUR_SERVER_IP:8088` (binds to `0.0.0.0`)
+
+The installer fills missing secrets, preserves existing credentials on retries, and highlights the administrator login in red. See [domain and HTTPS setup](deploy/docker/README.md#domain-and-https).
 
 ## Connect a Sensors Data SDK after activation
 
@@ -67,7 +71,7 @@ docker compose exec -T clickhouse clickhouse-client \
   --query "SELECT time, event, distinct_id FROM sensors.event WHERE event = 'integration_test' ORDER BY time DESC LIMIT 10"
 ```
 
-Open Superset at `http://127.0.0.1:8088`. The installer prints the generated administrator password once startup completes.
+Open Superset at the installer's `http://YOUR_SERVER_IP:8088` URL. The installer prints the generated administrator password once startup completes.
 
 ## Production requirements
 
